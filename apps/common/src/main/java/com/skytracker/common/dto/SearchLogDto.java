@@ -16,13 +16,15 @@ public class SearchLogDto {
     private String destinationLocationCode;
     private String departureDate;
     private String returnDate;
+    private int adults;
 
     public static SearchLogDto from(FlightSearchRequestDto dto) {
         return SearchLogDto.builder()
                 .originLocationCode(dto.getOriginLocationAirport())
-                .destinationLocationCode(dto.getDestinationLocationAirPort())
+                .destinationLocationCode(dto.getDestinationLocationAirport())
                 .departureDate(dto.getDepartureDate())
                 .returnDate(dto.getReturnDate())
+                .adults(dto.getAdults())
                 .build();
     }
 }

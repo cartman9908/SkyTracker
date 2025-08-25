@@ -1,13 +1,5 @@
 spring:
   elasticsearch:
-    uris: ${SPRING_ELASTICSEARCH_URIS}
-    username: ${SPRING_ELASTICSEARCH_USERNAME}
-    password: ${SPRING_ELASTICSEARCH_PASSWORD}
-    ssl:
-      bundle: ${SPRING_ELASTICSEARCH_SSL_BUNDLE:es}
-  ssl:
-    bundle:
-      pem:
-        es:
-          truststore:
-            certificate: ${SPRING_SSL_BUNDLE_PEM_ES_TRUSTSTORE_CERTIFICATE:/etc/es/certs/ca.crt}
+    uris: ${ES_URI}
+    username: ${ES_USERNAME}
+    password: ${ES_PASSWORD}
