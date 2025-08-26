@@ -1,8 +1,8 @@
 package com.skytracker.elasticsearch.service;
 
-import com.skytracker.elasticsearch.dto.EsAggregationDto;
 import com.skytracker.core.constants.RedisKeys;
 import com.skytracker.core.service.RedisService;
+import com.skytracker.dto.EsAggregationDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;

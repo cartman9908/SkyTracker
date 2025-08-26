@@ -8,24 +8,13 @@ services:
       dockerfile: Dockerfile
     ports:
       - "8080:8080"
-    environment:
-      DB_URL: ${DB_URL}
-      DB_USERNAME: ${DB_USERNAME}
-      DB_PASSWORD: ${DB_PASSWORD}
-      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
-      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
-      JWT_SECRET: ${JWT_SECRET}
-      JWT_EXPIRATION: ${JWT_EXPIRATION}
-      JWT_REFRESH_EXPIRATION: ${JWT_REFRESH_EXPIRATION}
-      AMADEUS_CLIENT_ID: ${AMADEUS_CLIENT_ID}
-      AMADEUS_CLIENT_SECRET: ${AMADEUS_CLIENT_SECRET}
     networks:
       - redis-cluster-net
       - kafka-net
       - elk-net
     depends_on:
-      - mysql
-    restart: on-failure
+      mysql:
+        condition: service_healthy
     env_file:
       - ../../.env
 
@@ -42,8 +31,13 @@ services:
       - mysql-data:/var/lib/mysql
     networks:
       - redis-cluster-net
-    env_file:
-      - ../../.env
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-proot" ]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 20s
+
 
 networks:
   redis-cluster-net:

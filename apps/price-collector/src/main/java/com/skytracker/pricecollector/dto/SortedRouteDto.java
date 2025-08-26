@@ -31,8 +31,8 @@ public class SortedRouteDto {
         return SortedRouteDto.builder()
                 .departureAirportCode(dto.getDepartureAirport())
                 .arrivalAirportCode(dto.getArrivalAirport())
-                .departureTime(dto.getOutboundDepartureTime())
-                .arrivalTime(dto.getReturnArrivalTime().substring(0, 10))
+                .departureTime(dto.getOutboundDepartureTime().substring(0,10))
+                .arrivalTime(dto.getReturnDepartureTime().substring(0, 10))
                 .build();
     }
 }

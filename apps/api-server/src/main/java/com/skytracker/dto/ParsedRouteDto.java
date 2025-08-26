@@ -1,4 +1,4 @@
-package com.skytracker.elasticsearch.dto;
+package com.skytracker.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

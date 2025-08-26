@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Configuration
+@ConditionalOnProperty(prefix = "spring.kafka", name = "bootstrap-servers")
 public class PriceAlertConsumerConfig {
 
     @Value("${spring.kafka.bootstrap-servers}")
