@@ -4,8 +4,9 @@ spring:
     client-id: price-collector
 
     consumer:
+      group-id: price-collector-group
       enable-auto-commit: false
-      auto-offset-reset: earliest
+      auto-offset-reset: latest
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
 
@@ -14,7 +15,7 @@ spring:
         partition.assignment.strategy: org.apache.kafka.clients.consumer.CooperativeStickyAssignor
         heartbeat.interval.ms: 3000
         session.timeout.ms: 10000
-      max-poll-records: 30
+      max-poll-records: 50
 
 
     listener:

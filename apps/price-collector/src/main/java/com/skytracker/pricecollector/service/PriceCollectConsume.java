@@ -17,11 +17,10 @@ public class PriceCollectConsume {
     private final RouteStoreUtil routeStoreUtil;
 
     @KafkaListener(topics = "flight-ticket-update", groupId = "price-collector-group")
-    public void oneWayTicketConsume(List<Object> responseDto, Acknowledgment ack) {
+    public void TicketConsume(List<Object> responseDto, Acknowledgment ack) {
         try {
             routeStoreUtil.routeStore(responseDto);
             ack.acknowledge();
-            log.info("flight ticket consumed.");
         } catch (Exception e) {
             throw new IllegalArgumentException("항공권 결과 저장 실패", e);
         }

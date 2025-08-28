@@ -8,12 +8,15 @@ import com.skytracker.core.constants.RedisKeys;
 import com.skytracker.core.service.RedisService;
 import com.skytracker.pricecollector.dto.SortedRouteDto;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class RouteStoreUtil {
 
@@ -24,7 +27,7 @@ public class RouteStoreUtil {
 
         Map<Object,Object> rankingMap = redisService.getHash(RedisKeys.HOT_ROUTES);
 
-        for (Object dto: dtoList) {
+        for (Object dto : dtoList) {
             if (dto instanceof FlightSearchResponseDto responseDto) {
 
                 String json = objectMapper.writeValueAsString(responseDto);
@@ -33,14 +36,15 @@ public class RouteStoreUtil {
 
                 String routeKey = getRouteKey(sortedRouteDto);
 
-                String matchedRankField =  rankingMap.entrySet().stream()
-                        .filter(e -> String.valueOf(e.getValue()).startsWith(routeKey + "_"))
-                        .map(e -> String.valueOf(e.getKey()))
+                String matchedRankField = rankingMap.entrySet().stream()
+                        .map(e -> Map.entry(String.valueOf(e.getKey()), String.valueOf(e.getValue())))
+                        .filter(e -> e.getValue().startsWith(routeKey + "_"))
+                        .map(Map.Entry::getKey)
                         .findFirst()
                         .orElse(null);
 
-                redisService.pushList(matchedRankField, json);
-
+                redisService.pushList(matchedRankField, json, Duration.ofMinutes(10));
+                log.info("push this key {}", matchedRankField);
             } else if (dto instanceof RoundTripFlightSearchResponseDto responseDto) {
 
                 String json = objectMapper.writeValueAsString(responseDto);
@@ -49,13 +53,15 @@ public class RouteStoreUtil {
 
                 String routeKey = getRouteKey(sortedRouteDto);
 
-                String matchedRankField =  rankingMap.entrySet().stream()
-                        .filter(e -> String.valueOf(e.getValue()).startsWith(routeKey + "_"))
-                        .map(e -> String.valueOf(e.getKey()))
+                String matchedRankField = rankingMap.entrySet().stream()
+                        .map(e -> Map.entry(String.valueOf(e.getKey()), String.valueOf(e.getValue())))
+                        .filter(e -> e.getValue().startsWith(routeKey + "_"))
+                        .map(Map.Entry::getKey)
                         .findFirst()
                         .orElse(null);
 
-                redisService.pushList(matchedRankField, json);
+                redisService.pushList(matchedRankField, json, Duration.ofMinutes(10));
+                log.info("push this key {}", matchedRankField);
             }
         }
     }

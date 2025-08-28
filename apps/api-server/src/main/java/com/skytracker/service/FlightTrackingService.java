@@ -1,6 +1,5 @@
 package com.skytracker.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.skytracker.common.dto.RouteAggregationDto;
 import com.skytracker.common.dto.flightSearch.FlightSearchRequestDto;
 import com.skytracker.core.constants.RedisKeys;
@@ -24,7 +23,6 @@ public class FlightTrackingService {
     private final TicketUpdateProducer producer;
     private final AmadeusFlightSearchService amadeusService;
     private final RedisService redisService;
-    private final ObjectMapper objectMapper;
 
     /**
      * 가격 수집 및 가격변동 이벤트 발행 (9분)

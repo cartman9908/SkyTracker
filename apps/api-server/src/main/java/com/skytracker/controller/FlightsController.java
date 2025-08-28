@@ -2,7 +2,9 @@ package com.skytracker.controller;
 
 import com.skytracker.common.dto.flightSearch.FlightSearchRequestDto;
 import com.skytracker.core.service.AmadeusFlightSearchService;
+import com.skytracker.dto.HotRouteBestPrice;
 import com.skytracker.service.AmadeusTokenManger;
+import com.skytracker.service.HotRankingService;
 import com.skytracker.service.SearchLogService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -21,14 +23,13 @@ public class FlightsController {
 
     private final AmadeusFlightSearchService flightSearchService;
     private final AmadeusTokenManger amadeusService;
+    private final HotRankingService rankingService;
     private final SearchLogService searchLogService;
-    private final RouteAggregationService routeAggregationService;
 
     @PostMapping("/search")
     public ResponseEntity<?> searchFlights(@RequestBody @Valid FlightSearchRequestDto dto) {
         try {
             searchLogService.publishSearchLog(dto);
-            routeAggregationService.updateHotRoutes();
             String token = amadeusService.getAmadeusAccessToken();
             List<?> results = flightSearchService.searchFlights(token, dto);
             return ResponseEntity.ok().body(results);
@@ -36,6 +37,12 @@ public class FlightsController {
             log.error("Flight search failed", e);
             return ResponseEntity.internalServerError().body("Internal error: " + e.getMessage());
         }
+    }
+
+    @PostMapping("/hot-routes")
+    public ResponseEntity<?> getHotRouteBestPrice() {
+        List<HotRouteBestPrice> result = rankingService.getHotRouteBestPrice();
+        return ResponseEntity.ok().body(result);
     }
 }
 

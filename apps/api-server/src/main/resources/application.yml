@@ -1,4 +1,10 @@
 spring:
+  config:
+    import:
+      - "classpath:application-alert.yml"
+      - "classpath:application-collector.yml"
+      - "classpath:application-producer.yml"
+
   security:
     oauth2:
       client:
@@ -28,6 +34,11 @@ spring:
     api:
       client-id: ${AMADEUS_CLIENT_ID}
       client-secret: ${AMADEUS_CLIENT_SECRET}
+
+  elasticsearch:
+    uris: ${ES_URI}
+    username: ${ES_USERNAME}
+    password: ${ES_PASSWORD}
 
   data:
     redis:
