@@ -6,7 +6,7 @@ import com.skytracker.core.constants.RedisKeys;
 import com.skytracker.core.mapper.FlightSearchResponseMapper;
 import com.skytracker.core.service.AmadeusFlightSearchService;
 import com.skytracker.core.service.RedisService;
-import com.skytracker.kafkaproducer.service.TicketUpdateProducer;
+import com.skytracker.kafka.service.TicketUpdateProducer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;

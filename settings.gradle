@@ -1,9 +1,10 @@
 rootProject.name = 'SkyTracker'
 
 include 'apps:api-server'
-include 'apps:elasticsearch'
-include 'apps:common'
-include 'apps:core'
-include 'apps:kafka-producer'
 include 'apps:price-alert'
 include 'apps:price-collector'
+
+include 'libs:common'
+include 'libs:core'
+
+include("adapters:kafka")

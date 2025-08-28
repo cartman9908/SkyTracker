@@ -25,12 +25,9 @@ repositories {
 }
 
 dependencies {
-	implementation project(':apps:common')
-	implementation project(':apps:core')
-	implementation project(':apps:kafka-producer')
-	implementation project(':apps:price-alert')
-	implementation project(':apps:price-collector')
-
+	implementation project(':libs:common')
+	implementation project(':libs:core')
+	implementation project(':adapters:kafka')
 
 	implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
 	annotationProcessor "com.querydsl:querydsl-apt:5.0.0:jakarta"
@@ -66,18 +63,6 @@ tasks.named('test') {
 
 clean {
 	delete file('src/main/generated')
-}
-
-processResources {
-	from(project(":apps:price-alert").file("src/main/resources")) {
-		include '**/*.yml'
-	}
-	from(project(":apps:price-collector").file("src/main/resources")) {
-		include '**/*.yml'
-	}
-	from(project(":apps:kafka-producer").file("src/main/resources")) {
-		include '**/*.yml'
-	}
 }
 
 springBoot {

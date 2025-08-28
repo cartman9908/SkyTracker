@@ -25,8 +25,8 @@ repositories {
 }
 
 dependencies {
-    implementation project(":apps:common")
-    implementation project(':apps:core')
+    implementation project(":libs:common")
+    implementation project(':libs:core')
 
     implementation 'com.fasterxml.jackson.core:jackson-databind'
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'

@@ -1,10 +1,4 @@
 spring:
-  config:
-    import:
-      - "classpath:application-alert.yml"
-      - "classpath:application-collector.yml"
-      - "classpath:application-producer.yml"
-
   security:
     oauth2:
       client:

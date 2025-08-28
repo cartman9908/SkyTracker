@@ -6,7 +6,7 @@ import com.skytracker.core.constants.RedisKeys;
 import com.skytracker.core.service.AmadeusFlightSearchService;
 import com.skytracker.core.service.RedisService;
 import com.skytracker.entity.UserFlightAlert;
-import com.skytracker.kafkaproducer.service.FlightAlertProducer;
+import com.skytracker.kafka.service.FlightAlertProducer;
 import com.skytracker.mapper.FlightAlertMapper;
 import com.skytracker.mapper.UserFlightAlertMapper;
 import com.skytracker.repository.FlightAlertRepository;
