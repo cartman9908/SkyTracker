@@ -2,6 +2,7 @@ package com.skytracker.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.skytracker.common.dto.flightSearch.FlightSearchResponseDto;
 import com.skytracker.common.dto.flightSearch.RoundTripFlightSearchResponseDto;
@@ -52,22 +53,26 @@ public class HotRankingService {
 
     private List<FlightTicketDto> classifyDto(List<Object> values) throws JsonProcessingException {
         List<FlightTicketDto> flightTicketDto = new ArrayList<>();
+        try {
+            for (Object value : values) {
+                JsonNode node = objectMapper.readTree(value.toString());
 
-        for (Object value : values) {
-            String json = objectMapper.writeValueAsString(value);
-            try {
-                RoundTripFlightSearchResponseDto dto = objectMapper.readValue(json, RoundTripFlightSearchResponseDto.class);
-                flightTicketDto.add(FlightTicketDto.from(dto));
-            } catch (JsonMappingException e) {
-                try {
-                    FlightSearchResponseDto dto = objectMapper.readValue(json, FlightSearchResponseDto.class);
+                String tripType = node.get("tripType").asText();
+
+                if ("ROUND_TRIP".equals(tripType)) {
+                    RoundTripFlightSearchResponseDto dto =
+                            objectMapper.treeToValue(node, RoundTripFlightSearchResponseDto.class);
                     flightTicketDto.add(FlightTicketDto.from(dto));
-                } catch (JsonMappingException e1) {
-                    throw new IllegalArgumentException("역직렬화 실패: " + e1.getMessage());
+                } else if ("ONE_WAY".equals(tripType)) {
+                    FlightSearchResponseDto dto =
+                            objectMapper.treeToValue(node, FlightSearchResponseDto.class);
+                    flightTicketDto.add(FlightTicketDto.from(dto));
                 }
-            }
-        }
 
+            }
+        } catch (JsonMappingException e) {
+            throw new IllegalStateException("역직렬화 실패", e);
+        }
         return flightTicketDto;
     }
 }

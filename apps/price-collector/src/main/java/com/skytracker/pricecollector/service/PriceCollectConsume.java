@@ -22,7 +22,8 @@ public class PriceCollectConsume {
             routeStoreUtil.routeStore(responseDto);
             ack.acknowledge();
         } catch (Exception e) {
-            throw new IllegalArgumentException("항공권 결과 저장 실패", e);
+            log.error("항공권 결과 저장 실패. batchSize={}",
+                    responseDto == null ? null : responseDto.size(), e);
         }
     }
 }

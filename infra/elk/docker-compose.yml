@@ -14,14 +14,14 @@ services:
       - ./elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
     networks:
       - elk-net
-    env_file:
-      - ../../.env
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "curl -s -u $ES_USERNAME:$ES_PASSWORD http://localhost:9200/_cluster/health | grep -E '\"status\":\"(green|yellow)\"' >/dev/null"]
       timeout: 5s
       retries: 30
       start_period: 60s
+    env_file:
+      - ../../.env
 
 
   logstash:
