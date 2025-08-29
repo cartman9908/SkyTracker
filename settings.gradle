@@ -7,4 +7,4 @@ include 'apps:price-collector'
 include 'libs:common'
 include 'libs:core'
 
-include("adapters:kafka")
+include 'adapters:kafka'

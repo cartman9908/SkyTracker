@@ -20,9 +20,9 @@ public class RedissonConfig {
         SentinelServersConfig sentinelConfig = config.useSentinelServers()
                 .setMasterName("mymaster")
                 .addSentinelAddress(
-                        "redis://my-redis-node-0.my-redis-headless.data.svc.cluster.local:26379",
-                        "redis://my-redis-node-1.my-redis-headless.data.svc.cluster.local:26379",
-                        "redis://my-redis-node-2.my-redis-headless.data.svc.cluster.local:26379"
+                        "redis://redis-node-0.redis-headless.data.svc.cluster.local:26379",
+                        "redis://redis-node-1.redis-headless.data.svc.cluster.local:26379",
+                        "redis://redis-node-2.redis-headless.data.svc.cluster.local:26379"
                 )
                 .setPassword(redisPassword)
                 .setSentinelPassword(redisPassword)

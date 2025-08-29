@@ -30,7 +30,7 @@ spring:
       client-secret: ${AMADEUS_CLIENT_SECRET}
 
   elasticsearch:
-    uris: ${ES_URI}
+    uris: http://elastic-es-http.data.svc.cluster.local:9200
     username: ${ES_USERNAME}
     password: ${ES_PASSWORD}
 
@@ -41,9 +41,9 @@ spring:
         password: ${REDIS_PASSWORD}
         master: mymaster
         nodes:
-          - my-redis-node-0.my-redis-headless.data.svc.cluster.local:26379
-          - my-redis-node-1.my-redis-headless.data.svc.cluster.local:26379
-          - my-redis-node-2.my-redis-headless.data.svc.cluster.local:26379
+          - redis-node-0.redis-headless.data.svc.cluster.local:26379
+          - redis-node-1.redis-headless.data.svc.cluster.local:26379
+          - redis-node-2.redis-headless.data.svc.cluster.local:26379
 
 jwt:
   secret: ${JWT_SECRET}

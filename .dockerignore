@@ -5,4 +5,4 @@
 .gradle
 .idea
 *.iml
-Dockerfile
+apps/api-server/Dockerfile
