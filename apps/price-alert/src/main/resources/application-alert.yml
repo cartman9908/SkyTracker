@@ -7,3 +7,6 @@ spring:
   mail:
     username: ${SPRING_MAIL_USERNAME}
     password: ${SPRING_MAIL_PASSWORD}
+
+  redis:
+    enabled: false
