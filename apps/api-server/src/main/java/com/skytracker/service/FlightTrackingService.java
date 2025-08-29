@@ -2,6 +2,9 @@ package com.skytracker.service;
 
 import com.skytracker.common.dto.RouteAggregationDto;
 import com.skytracker.common.dto.flightSearch.FlightSearchRequestDto;
+import com.skytracker.common.exception.FlightTicketPublishFailedException;
+import com.skytracker.common.exception.HotRouteParsedFailed;
+import com.skytracker.common.exception.RouteAggregationException;
 import com.skytracker.core.constants.RedisKeys;
 import com.skytracker.core.mapper.FlightSearchResponseMapper;
 import com.skytracker.core.service.AmadeusFlightSearchService;
@@ -45,12 +48,13 @@ public class FlightTrackingService {
             }
             log.info("항공권 가격 수집 및 Kafka 발행 완료 ({}건)", totalPublished);
         } catch (Exception e) {
-            log.error("항공권 가격 수집 및 Kafka 발행 실패", e);
+            throw new FlightTicketPublishFailedException("항공권 가격정보 Kafka 발행 중 오류", e);
         }
     }
 
     /**
      * Redis 에서 상위 인기 노선 10개 Get
+     *
      */
     private List<RouteAggregationDto> getCachedHotRoutes() {
         List<Object> rawList = redisService.getHashValues(RedisKeys.HOT_ROUTES);
@@ -78,10 +82,9 @@ public class FlightTrackingService {
                         Long.parseLong(t[4])
                 );
             } else {
-                throw new IllegalArgumentException("Invalid route aggregation: " + s);
+                throw new HotRouteParsedFailed(s);
             }
         } catch (NumberFormatException e) {
-            throw new IllegalArgumentException("HOT_ROUTES Value 값 파싱 실패" + e);
-        }
+            throw new RouteAggregationException("유효하지 않은 HOT_ROUTES 포맷: " + s);        }
     }
 }

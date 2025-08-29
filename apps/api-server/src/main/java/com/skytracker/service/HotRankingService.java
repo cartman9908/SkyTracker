@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.skytracker.common.dto.flightSearch.FlightSearchResponseDto;
 import com.skytracker.common.dto.flightSearch.RoundTripFlightSearchResponseDto;
+import com.skytracker.common.exception.JsonMappingFailedException;
 import com.skytracker.core.constants.RedisKeys;
 import com.skytracker.core.service.RedisService;
 import com.skytracker.dto.FlightTicketDto;
@@ -44,7 +45,7 @@ public class HotRankingService {
                         });
 
             } catch (JsonProcessingException e) {
-                throw new IllegalStateException("Cannot parse json", e);
+                throw new JsonMappingFailedException("역직렬화 실패: JSON 구조가 DTO와 맞지 않습니다", e);
             }
 
         }
@@ -71,7 +72,7 @@ public class HotRankingService {
 
             }
         } catch (JsonMappingException e) {
-            throw new IllegalStateException("역직렬화 실패", e);
+            throw new JsonMappingFailedException("역직렬화 실패: JSON 구조가 DTO와 맞지 않습니다", e);
         }
         return flightTicketDto;
     }
