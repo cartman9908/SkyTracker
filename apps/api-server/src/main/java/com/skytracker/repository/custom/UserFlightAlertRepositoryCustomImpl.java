@@ -12,6 +12,7 @@ import static com.skytracker.entity.QFlightAlert.flightAlert;
 import static com.skytracker.entity.QUser.user;
 import static com.skytracker.entity.QUserFlightAlert.userFlightAlert;
 
+
 @Repository
 @RequiredArgsConstructor
 public class UserFlightAlertRepositoryCustomImpl implements UserFlightAlertCustom{

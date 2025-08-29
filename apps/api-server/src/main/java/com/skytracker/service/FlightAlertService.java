@@ -2,6 +2,8 @@ package com.skytracker.service;
 
 import com.skytracker.common.dto.alerts.FlightAlertEventMessageDto;
 import com.skytracker.common.dto.alerts.FlightAlertRequestDto;
+import com.skytracker.common.exception.EmptyAlertSubscribersException;
+import com.skytracker.common.exception.FlightAlertPublishFailed;
 import com.skytracker.core.constants.RedisKeys;
 import com.skytracker.core.service.AmadeusFlightSearchService;
 import com.skytracker.core.service.RedisService;
@@ -39,7 +41,13 @@ public class FlightAlertService {
     @Transactional
     public void publishFlightAlerts() {
         List<FlightAlertEventMessageDto> alertEvents = checkPrice();
-        alertEvents.forEach(flightAlertProducer::sendFlightAlert);
+        try {
+            alertEvents.forEach(flightAlertProducer::sendFlightAlert);
+        } catch (Exception e) {
+            throw new FlightAlertPublishFailed("Kafka 알림 발행 중 예외 발생", e);
+
+        }
+
     }
 
     /**
@@ -63,7 +71,7 @@ public class FlightAlertService {
                 List<UserFlightAlert> subscribers = userFlightAlertRepository.findAllByFlightAlert(alert);
 
                 if (subscribers.isEmpty()) {
-                    throw new IllegalArgumentException("해당 항공권의 구독자가 없음");
+                    throw new EmptyAlertSubscribersException();
                 }
                 subscribers.stream()
                         .filter(UserFlightAlert::isActive)

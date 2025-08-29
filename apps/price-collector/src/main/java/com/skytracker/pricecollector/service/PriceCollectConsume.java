@@ -1,5 +1,6 @@
 package com.skytracker.pricecollector.service;
 
+import com.skytracker.common.exception.FlightTicketSaveFailedException;
 import com.skytracker.pricecollector.util.RouteStoreUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,8 +23,7 @@ public class PriceCollectConsume {
             routeStoreUtil.routeStore(responseDto);
             ack.acknowledge();
         } catch (Exception e) {
-            log.error("항공권 결과 저장 실패. batchSize={}",
-                    responseDto == null ? null : responseDto.size(), e);
+            throw new FlightTicketSaveFailedException("Kafka consumer 처리 중 오류 발생", e);
         }
     }
 }

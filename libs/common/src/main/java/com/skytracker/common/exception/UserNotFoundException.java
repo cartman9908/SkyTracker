@@ -6,8 +6,5 @@ public class UserNotFoundException extends BusinessException {
         super(ErrorCode.USER_NOT_FOUND, "id=" + id);
     }
 
-    public UserNotFoundException() {
-        super(ErrorCode.USER_NOT_FOUND);
-    }
 }
 

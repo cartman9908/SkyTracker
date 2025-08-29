@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.skytracker.common.dto.flightSearch.FlightSearchResponseDto;
 import com.skytracker.common.dto.flightSearch.RoundTripFlightSearchResponseDto;
+import com.skytracker.common.exception.RouteKeyNotFoundException;
 import com.skytracker.core.constants.RedisKeys;
 import com.skytracker.core.service.RedisService;
 import com.skytracker.pricecollector.dto.SortedRouteDto;
@@ -28,42 +29,33 @@ public class RouteStoreUtil {
 
         for (Object dto : dtoList) {
             if (dto instanceof FlightSearchResponseDto responseDto) {
-
                 String json = objectMapper.writeValueAsString(responseDto);
-
-                SortedRouteDto sortedRouteDto = SortedRouteDto.from(responseDto);
-
-                String routeKey = getRouteKey(sortedRouteDto);
-
-                String matchedRankField = rankingMap.entrySet().stream()
-                        .map(e -> Map.entry(String.valueOf(e.getKey()), String.valueOf(e.getValue())))
-                        .filter(e -> e.getValue().startsWith(routeKey + "_"))
-                        .map(Map.Entry::getKey)
-                        .findFirst()
-                        .orElse(null);
-
-                redisService.pushList(matchedRankField, json);
-
-                log.info("push this key {}", matchedRankField);
+                SortedRouteDto sorted = SortedRouteDto.from(responseDto);
+                pushToRouteList(rankingMap, json, sorted);
             } else if (dto instanceof RoundTripFlightSearchResponseDto responseDto) {
-
                 String json = objectMapper.writeValueAsString(responseDto);
-
-                SortedRouteDto sortedRouteDto = SortedRouteDto.from(responseDto);
-
-                String routeKey = getRouteKey(sortedRouteDto);
-
-                String matchedRankField = rankingMap.entrySet().stream()
-                        .map(e -> Map.entry(String.valueOf(e.getKey()), String.valueOf(e.getValue())))
-                        .filter(e -> e.getValue().startsWith(routeKey + "_"))
-                        .map(Map.Entry::getKey)
-                        .findFirst()
-                        .orElse(null);
-
-                redisService.pushList(matchedRankField, json);
-
-                log.info("push this key {}", matchedRankField);
+                SortedRouteDto sorted = SortedRouteDto.from(responseDto);
+                pushToRouteList(rankingMap, json, sorted);
             }
+        }
+    }
+
+    private void pushToRouteList(Map<Object,Object> rankingMap, String json, SortedRouteDto sortedRouteDto) {
+
+        String routeKey = getRouteKey(sortedRouteDto);
+
+        String matchedRankField = rankingMap.entrySet().stream()
+                .map(e -> Map.entry(String.valueOf(e.getKey()), String.valueOf(e.getValue())))
+                .filter(e -> e.getValue().startsWith(routeKey + "_"))
+                .map(Map.Entry::getKey)
+                .findFirst()
+                .orElse(null);
+
+        if (matchedRankField != null) {
+            redisService.pushList(matchedRankField, json);
+            log.info("push this key {}", matchedRankField);
+        } else {
+            throw new RouteKeyNotFoundException("해당 경로에 대한 랭킹 키를 찾을 수 없습니다. routeKey=" + routeKey);
         }
     }
 
