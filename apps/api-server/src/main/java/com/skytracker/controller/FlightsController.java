@@ -46,4 +46,3 @@ public class FlightsController {
         return ResponseEntity.ok().body(result);
     }
 }
-
