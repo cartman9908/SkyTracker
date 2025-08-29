@@ -38,7 +38,7 @@ public class FlightsController {
         }
     }
 
-    @PostMapping("/hot-routes")
+    @GetMapping("/hot-routes")
     public ResponseEntity<?> getHotRouteBestPrice() {
         List<HotRouteBestPrice> result = rankingService.getHotRouteBestPrice();
         return ResponseEntity.ok().body(result);

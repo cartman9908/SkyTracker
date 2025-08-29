@@ -11,7 +11,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 
@@ -43,7 +42,8 @@ public class RouteStoreUtil {
                         .findFirst()
                         .orElse(null);
 
-                redisService.pushList(matchedRankField, json, Duration.ofMinutes(10));
+                redisService.pushList(matchedRankField, json);
+
                 log.info("push this key {}", matchedRankField);
             } else if (dto instanceof RoundTripFlightSearchResponseDto responseDto) {
 
@@ -60,7 +60,8 @@ public class RouteStoreUtil {
                         .findFirst()
                         .orElse(null);
 
-                redisService.pushList(matchedRankField, json, Duration.ofMinutes(10));
+                redisService.pushList(matchedRankField, json);
+
                 log.info("push this key {}", matchedRankField);
             }
         }

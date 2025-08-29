@@ -20,8 +20,9 @@ public class RedisService {
         redisTemplate.delete(key);
     }
 
-    public void pushList(String key, String json, Duration ttl) {
-        redisTemplate.opsForList().rightPush(key, json, ttl);
+    public void pushList(String key, String json) {
+        redisTemplate.opsForList().rightPush(key, json);
+        redisTemplate.expire(key, Duration.ofMinutes(10));
     }
 
     public List<String> getKeys(String key) {
