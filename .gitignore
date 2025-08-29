@@ -48,3 +48,7 @@ apps/api-server/.env
 /.env
 # build artifacts
 *.jar
+
+k8s/apps/app-secret.yaml
+k8s/**/app-secret.yaml
+*.sealed-secret.yaml

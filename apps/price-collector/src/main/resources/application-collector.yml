@@ -12,14 +12,29 @@ spring:
 
       properties:
         spring.json.trusted.packages: "*"
+        spring.json.use.type.headers: false
+        spring.json.value.default.type: com.skytracker.common.dto.alerts.FlightAlertEventMessageDto
+
         partition.assignment.strategy: org.apache.kafka.clients.consumer.CooperativeStickyAssignor
         heartbeat.interval.ms: 3000
         session.timeout.ms: 10000
-      max-poll-records: 50
 
+        # 커밋 일관성(프로듀서가 트랜잭션/멱등일 때 권장)
+        isolation.level: read_committed
+
+      max-poll-records: 50
 
     listener:
       type: batch
       ack-mode: manual_immediate
       concurrency: 3
       poll-timeout: 3s
+      missing-topics-fatal: false   # 배포/부팅 시 토픽 미생성으로 인한 실패 방지
+
+  data:
+    redis:
+      password: ${SPRING_DATA_REDIS_PASSWORD}
+      sentinel:
+        master: ${SPRING_DATA_REDIS_SENTINEL_MASTER}
+        nodes: ${SPRING_DATA_REDIS_SENTINEL_NODES}
+        password: ${SPRING_DATA_REDIS_SENTINEL_PASSWORD}

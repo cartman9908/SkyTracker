@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: price-collector
+  namespace: apps
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: price-collector }
+  template:
+    metadata:
+      labels: { app: price-collector }
+    spec:
+      containers:
+        - name: price-collector
+          image: yeonwu/price-collector:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+          envFrom:
+            - secretRef:
+                name: app-secret         # ← Redis Sentinel/비번 등 여기서 주입
+
+          resources:
+            requests: { cpu: 100m, memory: 256Mi }
+            limits: { memory: 512Mi }

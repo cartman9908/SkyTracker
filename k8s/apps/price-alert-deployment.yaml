@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: price-alert
+  namespace: apps
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: price-alert }
+  template:
+    metadata:
+      labels: { app: price-alert }
+    spec:
+      containers:
+        - name: price-alert
+          image: yeonwu/price-alert:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+          envFrom:
+            - secretRef:
+                name: app-secret         # ← 메일 계정/비번 등 여기서 주입
+
+          resources:
+            requests: { cpu: 100m, memory: 256Mi }
+            limits: { memory: 512Mi }

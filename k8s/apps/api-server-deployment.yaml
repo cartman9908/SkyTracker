@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-server
+  namespace: apps
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: api-server
+  template:
+    metadata:
+      labels:
+        app: api-server
+    spec:
+      containers:
+        - name: api-server
+          image: yeonwu/skytracker-app:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+
+          # ===== 모든 환경변수(app-secret에서 통합 관리) =====
+          envFrom:
+            - secretRef:
+                name: app-secret
+
+          resources:
+            requests:
+              cpu: 200m
+              memory: 512Mi
+            limits:
+              memory: 1Gi
