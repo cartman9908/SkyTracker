@@ -1,4 +1,4 @@
-package com.skytracker.common.exception.common;
+package com.skytracker.common.exception.integrations;
 
 import com.skytracker.common.exception.BusinessException;
 import com.skytracker.common.exception.ErrorCode;

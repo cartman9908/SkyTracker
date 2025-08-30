@@ -1,7 +1,7 @@
 package com.skytracker.service;
 
-import com.skytracker.common.exception.common.AmadeusTokenIssueException;
-import com.skytracker.common.exception.common.DistributedLockTimeoutException;
+import com.skytracker.common.exception.integrations.AmadeusTokenIssueException;
+import com.skytracker.common.exception.integrations.DistributedLockTimeoutException;
 import com.skytracker.core.constants.RedisKeys;
 import com.skytracker.core.service.RedisService;
 import lombok.RequiredArgsConstructor;

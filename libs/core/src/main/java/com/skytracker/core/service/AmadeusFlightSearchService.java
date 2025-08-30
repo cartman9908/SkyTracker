@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.skytracker.common.dto.SearchContext;
 import com.skytracker.common.dto.alerts.FlightAlertRequestDto;
 import com.skytracker.common.dto.flightSearch.FlightSearchRequestDto;
-import com.skytracker.common.exception.common.FlightSearchException;
+import com.skytracker.common.exception.integrations.FlightSearchException;
 import com.skytracker.core.utils.AmadeusResponseParser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
