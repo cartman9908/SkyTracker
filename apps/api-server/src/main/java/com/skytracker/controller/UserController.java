@@ -6,6 +6,8 @@ import com.skytracker.security.auth.CustomUserDetails;
 import com.skytracker.security.auth.JwtUtils;
 import com.skytracker.service.TokenBlackListService;
 import com.skytracker.service.UserService;
+import com.skytracker.validation.CustomValidators;
+import com.skytracker.validation.ValidationSequence;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +15,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
@@ -25,6 +29,7 @@ public class UserController {
 
     private final JwtUtils jwtUtil;
     private final UserService userService;
+    private final CustomValidators validators;
     private final TokenBlackListService tokenBlackListService;
 
     /**
@@ -32,7 +37,10 @@ public class UserController {
      */
     @PatchMapping
     public ResponseEntity<?> updateUser(@AuthenticationPrincipal CustomUserDetails customUserDetails,
-                                        @RequestBody UserUpdateRequestDto dto) {
+                                        @Validated(ValidationSequence.class) @RequestBody UserUpdateRequestDto dto,
+                                        BindingResult bindingResult) {
+
+        validators.updateValidate(dto, bindingResult);
         userService.update(customUserDetails.getUserId(), dto);
 
         UserResponseDto updateUser = userService.getUser(customUserDetails.getUserId());
