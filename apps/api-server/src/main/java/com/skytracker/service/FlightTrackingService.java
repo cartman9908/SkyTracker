@@ -2,9 +2,9 @@ package com.skytracker.service;
 
 import com.skytracker.common.dto.RouteAggregationDto;
 import com.skytracker.common.dto.flightSearch.FlightSearchRequestDto;
-import com.skytracker.common.exception.FlightTicketPublishFailedException;
-import com.skytracker.common.exception.HotRouteParsedFailed;
-import com.skytracker.common.exception.RouteAggregationException;
+import com.skytracker.common.exception.kafka.FlightTicketPublishFailedException;
+import com.skytracker.common.exception.common.HotRouteParsedFailed;
+import com.skytracker.common.exception.common.RouteAggregationException;
 import com.skytracker.core.constants.RedisKeys;
 import com.skytracker.core.mapper.FlightSearchResponseMapper;
 import com.skytracker.core.service.AmadeusFlightSearchService;

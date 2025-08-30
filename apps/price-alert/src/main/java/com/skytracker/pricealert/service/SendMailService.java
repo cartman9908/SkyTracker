@@ -1,8 +1,8 @@
 package com.skytracker.pricealert.service;
 
 import com.skytracker.common.dto.alerts.FlightAlertEventMessageDto;
-import com.skytracker.common.exception.EmailInvalidException;
-import com.skytracker.common.exception.EmailSendFailedException;
+import com.skytracker.common.exception.user.EmailInvalidException;
+import com.skytracker.common.exception.user.EmailSendFailedException;
 import com.skytracker.pricealert.dto.SendMessageDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

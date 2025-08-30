@@ -2,9 +2,9 @@ package com.skytracker.service;
 
 import com.skytracker.common.dto.alerts.FlightAlertRequestDto;
 import com.skytracker.common.dto.alerts.FlightAlertResponseDto;
-import com.skytracker.common.exception.AlertAlreadyRegisteredException;
-import com.skytracker.common.exception.FlightAlertNotFoundException;
-import com.skytracker.common.exception.UserNotFoundException;
+import com.skytracker.common.exception.alert.AlertAlreadyRegisteredException;
+import com.skytracker.common.exception.alert.FlightAlertNotFoundException;
+import com.skytracker.common.exception.user.UserNotFoundException;
 import com.skytracker.entity.FlightAlert;
 import com.skytracker.entity.User;
 import com.skytracker.entity.UserFlightAlert;

@@ -1,4 +1,7 @@
-package com.skytracker.common.exception;
+package com.skytracker.common.exception.common;
+
+import com.skytracker.common.exception.BusinessException;
+import com.skytracker.common.exception.ErrorCode;
 
 public class HotRouteParsedFailed extends BusinessException {
     public HotRouteParsedFailed(String detail) {

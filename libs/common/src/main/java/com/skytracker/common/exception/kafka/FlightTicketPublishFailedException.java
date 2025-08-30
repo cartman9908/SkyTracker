@@ -1,4 +1,7 @@
-package com.skytracker.common.exception;
+package com.skytracker.common.exception.kafka;
+
+import com.skytracker.common.exception.BusinessException;
+import com.skytracker.common.exception.ErrorCode;
 
 public class FlightTicketPublishFailedException extends BusinessException {
     public FlightTicketPublishFailedException(String detail, Throwable cause) {

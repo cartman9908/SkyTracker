@@ -2,8 +2,8 @@ package com.skytracker.service;
 
 import com.skytracker.common.dto.alerts.FlightAlertEventMessageDto;
 import com.skytracker.common.dto.alerts.FlightAlertRequestDto;
-import com.skytracker.common.exception.EmptyAlertSubscribersException;
-import com.skytracker.common.exception.FlightAlertPublishFailed;
+import com.skytracker.common.exception.alert.EmptyAlertSubscribersException;
+import com.skytracker.common.exception.kafka.FlightAlertPublishFailedException;
 import com.skytracker.core.constants.RedisKeys;
 import com.skytracker.core.service.AmadeusFlightSearchService;
 import com.skytracker.core.service.RedisService;
@@ -44,7 +44,7 @@ public class FlightAlertService {
         try {
             alertEvents.forEach(flightAlertProducer::sendFlightAlert);
         } catch (Exception e) {
-            throw new FlightAlertPublishFailed("Kafka 알림 발행 중 예외 발생", e);
+            throw new FlightAlertPublishFailedException("Kafka 알림 발행 중 예외 발생", e);
 
         }
 

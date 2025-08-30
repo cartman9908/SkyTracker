@@ -2,7 +2,7 @@ package com.skytracker.service;
 
 import com.skytracker.common.dto.SearchLogDto;
 import com.skytracker.common.dto.flightSearch.FlightSearchRequestDto;
-import com.skytracker.common.exception.SearchLogPublishFailedException;
+import com.skytracker.common.exception.kafka.SearchLogPublishFailedException;
 import com.skytracker.kafka.service.FlightSearchLogsProducer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

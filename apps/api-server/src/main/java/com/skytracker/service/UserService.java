@@ -1,6 +1,6 @@
 package com.skytracker.service;
 
-import com.skytracker.common.exception.UserNotFoundException;
+import com.skytracker.common.exception.user.UserNotFoundException;
 import com.skytracker.dto.user.UserResponseDto;
 import com.skytracker.dto.user.UserUpdateRequestDto;
 import com.skytracker.entity.User;

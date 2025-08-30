@@ -1,6 +1,9 @@
-package com.skytracker.common.exception;
+package com.skytracker.common.exception.common;
 
-public class AmadeusTokenIssueException extends BusinessException{
+import com.skytracker.common.exception.BusinessException;
+import com.skytracker.common.exception.ErrorCode;
+
+public class AmadeusTokenIssueException extends BusinessException {
 
     public AmadeusTokenIssueException(String detail) {
         super(ErrorCode.TOKEN_ISSUE_FAILURE, detail);

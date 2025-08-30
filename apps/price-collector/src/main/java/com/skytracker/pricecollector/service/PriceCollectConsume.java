@@ -1,6 +1,6 @@
 package com.skytracker.pricecollector.service;
 
-import com.skytracker.common.exception.FlightTicketSaveFailedException;
+import com.skytracker.common.exception.kafka.FlightTicketSaveFailedException;
 import com.skytracker.pricecollector.util.RouteStoreUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

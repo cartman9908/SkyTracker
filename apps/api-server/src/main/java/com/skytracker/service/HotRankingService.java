@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.skytracker.common.dto.flightSearch.FlightSearchResponseDto;
 import com.skytracker.common.dto.flightSearch.RoundTripFlightSearchResponseDto;
-import com.skytracker.common.exception.JsonMappingFailedException;
+import com.skytracker.common.exception.common.JsonMappingFailedException;
 import com.skytracker.core.constants.RedisKeys;
 import com.skytracker.core.service.RedisService;
 import com.skytracker.dto.FlightTicketDto;
