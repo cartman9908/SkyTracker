@@ -2,6 +2,7 @@ package com.skytracker.entity;
 
 import com.skytracker.dto.user.Role;
 import com.skytracker.dto.user.SocialUserRequestDto;
+import com.skytracker.dto.user.UserUpdateRequestDto;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -51,5 +52,9 @@ public class User extends BaseTimeEntity{
                 .username(socialUserRequestDto.getName())
                 .role(socialUserRequestDto.getRole())
                 .build();
+    }
+
+    public void update(UserUpdateRequestDto dto) {
+        this.email = dto.getEmail();
     }
 }

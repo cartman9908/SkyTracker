@@ -1,16 +1,19 @@
 package com.skytracker.controller;
 
+import com.skytracker.dto.user.UserResponseDto;
+import com.skytracker.dto.user.UserUpdateRequestDto;
+import com.skytracker.security.auth.CustomUserDetails;
 import com.skytracker.security.auth.JwtUtils;
 import com.skytracker.service.TokenBlackListService;
+import com.skytracker.service.UserService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
 
@@ -20,9 +23,38 @@ import java.util.Arrays;
 @RequiredArgsConstructor
 public class UserController {
 
-    private final TokenBlackListService tokenBlackListService;
     private final JwtUtils jwtUtil;
+    private final UserService userService;
+    private final TokenBlackListService tokenBlackListService;
 
+    /**
+     * 회원 정보 수정
+     */
+    @PatchMapping
+    public ResponseEntity<?> updateUser(@AuthenticationPrincipal CustomUserDetails customUserDetails,
+                                        @RequestBody UserUpdateRequestDto dto) {
+        userService.update(customUserDetails.getUserId(), dto);
+
+        UserResponseDto updateUser = userService.getUser(customUserDetails.getUserId());
+
+        return ResponseEntity.ok(updateUser);
+    }
+
+    /**
+     *  회원 탈퇴
+     */
+    @DeleteMapping
+    public ResponseEntity<String> deleteUser(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
+
+        userService.deleteUser(customUserDetails.getUserId());
+
+        return ResponseEntity.ok("User deleted successfully." + customUserDetails.getUserId());
+    }
+
+
+    /**
+     * 로그아웃
+     */
     @PostMapping("/logout")
     public ResponseEntity<?> logout(HttpServletRequest request) {
         String authHeader = request.getHeader("Authorization");
