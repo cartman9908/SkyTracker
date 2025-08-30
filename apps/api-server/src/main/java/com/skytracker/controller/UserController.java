@@ -41,8 +41,12 @@ public class UserController {
                                         BindingResult bindingResult) {
 
         validators.updateValidate(dto, bindingResult);
-        userService.update(customUserDetails.getUserId(), dto);
 
+        if (bindingResult.hasErrors()) {
+            return ResponseEntity.badRequest().body(bindingResult.getAllErrors());
+        }
+
+        userService.update(customUserDetails.getUserId(), dto);
         UserResponseDto updateUser = userService.getUser(customUserDetails.getUserId());
 
         return ResponseEntity.ok(updateUser);
