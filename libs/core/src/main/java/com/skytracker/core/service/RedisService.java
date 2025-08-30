@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
@@ -56,5 +57,14 @@ public class RedisService {
     public String getValue(String key) {
         Object value = redisTemplate.opsForValue().get(key);
         return value != null ? value.toString() : null;
+    }
+
+    public Boolean isBlackListed(String key) {
+        Boolean value = (Boolean) redisTemplate.opsForValue().get(key);
+        return value != null && value;
+    }
+
+    public void setBlackList(String key, boolean value, long ttl, TimeUnit unit) {
+        redisTemplate.opsForValue().set(key, value, ttl, unit);
     }
 }

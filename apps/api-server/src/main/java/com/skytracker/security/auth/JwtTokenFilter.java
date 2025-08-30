@@ -1,5 +1,6 @@
 package com.skytracker.security.auth;
 
+import com.skytracker.service.TokenBlackListService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -20,11 +21,18 @@ import java.io.IOException;
 public class JwtTokenFilter extends OncePerRequestFilter {
 
     private final JwtUtils jwtUtils;
+    private final TokenBlackListService tokenBlackListService;
     private final CustomUserDetailsService userDetailsService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String token = resolveToken(request);
+
+        if (tokenBlackListService.isBlackList(token)) {
+            log.info("Blacklisted token: {}", token);
+            filterChain.doFilter(request, response);
+            return;
+        }
 
         if (isValidToken(token)){
             log.info("Invalid token");

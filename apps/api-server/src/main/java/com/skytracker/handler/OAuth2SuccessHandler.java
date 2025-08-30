@@ -2,11 +2,13 @@ package com.skytracker.handler;
 
 import com.skytracker.security.auth.CustomUserDetails;
 import com.skytracker.security.auth.JwtUtils;
+import com.skytracker.service.TokenBlackListService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
@@ -18,6 +20,7 @@ import java.io.IOException;
 public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
     private final JwtUtils jwtUtils;
+    private TokenBlackListService tokenBlackListService;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
@@ -28,6 +31,11 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         String refreshToken = jwtUtils.generateRefreshToken(email);
 
         response.setHeader("Authorization", "Bearer " + accessToken);
+
+        if(tokenBlackListService.isBlackList(accessToken)) {
+            response.setStatus(HttpStatus.UNAUTHORIZED.value());
+            return;
+        }
 
         Cookie refreshTokenCookie = new Cookie("refresh_token", refreshToken);
         refreshTokenCookie.setHttpOnly(true);
