@@ -29,6 +29,7 @@ public class AmadeusFlightSearchService {
      * redis 에서 조회한 accessToken 과 req 통해 Amadeus API 에 Response 요청
      */
     public List<?> searchFlights(String accessToken, FlightSearchRequestDto req) {
+        long start = System.nanoTime();
         try {
             Map<String, Object> requestBody = buildFlightSearchRequestBody(req);
             ResponseEntity<String> response = callAmadeusPostApi(requestBody, accessToken);
@@ -37,14 +38,24 @@ public class AmadeusFlightSearchService {
                 throw new RuntimeException("Failed to search flights");
             }
 
-            log.info("Search flights response: {}", response.getBody());
-
             SearchContext ctx = new SearchContext(
                     req.getAdults(),
                     req.getOriginLocationAirport(),
                     req.getDestinationLocationAirport(),
                     req.getTravelClass()
-                    );
+            );
+
+            List<?> offers = parser.parseFlightSearchResponse(response.getBody(), ctx);
+
+            long tookMs = (System.nanoTime() - start) / 1_000_000;
+            log.info("✈️ FlightSearch: {}→{} / {} / 성인 {}명 → {}건 ({} ms)",
+                    req.getOriginLocationAirport(),
+                    req.getDestinationLocationAirport(),
+                    req.getDepartureDate(),
+                    req.getAdults(),
+                    offers.size(),
+                    tookMs
+            );
 
             return parser.parseFlightSearchResponse(response.getBody(), ctx);
         }catch (HttpServerErrorException e) {
