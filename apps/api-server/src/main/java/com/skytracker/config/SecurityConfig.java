@@ -5,6 +5,7 @@ import com.skytracker.security.auth.CustomUserDetailsService;
 import com.skytracker.security.auth.JwtTokenFilter;
 import com.skytracker.security.auth.JwtUtils;
 import com.skytracker.security.oauth2.CustomOAuth2UserService;
+import com.skytracker.service.TokenBlackListService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
@@ -25,6 +26,7 @@ public class SecurityConfig{
     private final JwtUtils jwtUtils;
     private final OAuth2SuccessHandler oAuth2SuccessHandler;
     private final CustomUserDetailsService customUserDetailsService;
+    private final TokenBlackListService tokenBlackListService;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -42,7 +44,7 @@ public class SecurityConfig{
                                 .userService(customOAuth2UserService))
                         .successHandler(oAuth2SuccessHandler))
 
-                .addFilterBefore(new JwtTokenFilter(jwtUtils, customUserDetailsService)
+                .addFilterBefore(new JwtTokenFilter(jwtUtils, tokenBlackListService, customUserDetailsService)
                         , UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
