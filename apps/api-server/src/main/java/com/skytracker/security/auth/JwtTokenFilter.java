@@ -34,12 +34,6 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             return;
         }
 
-        if (isValidToken(token)){
-            log.info("Invalid token");
-            filterChain.doFilter(request, response);
-            return;
-        }
-
         String username = jwtUtils.extractUsername(token);
 
         if (username == null || SecurityContextHolder.getContext().getAuthentication() != null) {
@@ -60,14 +54,6 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     private String resolveToken(HttpServletRequest request) {
         String bearerToken = request.getHeader("Authorization");
         return (bearerToken != null && bearerToken.startsWith("Bearer ")) ? bearerToken.substring(7) : null;
-    }
-
-    private Boolean isValidToken(String token) {
-        if (token == null){
-            log.debug("Authorization 헤더가 없거나 잘못된 형식 입니다.");
-            return true;
-        }
-        return false;
     }
 
     private void setAuthentication(CustomUserDetails customUserDetails, HttpServletRequest request) {
