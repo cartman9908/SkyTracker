@@ -1,0 +1,82 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: logstash-pipeline
+  namespace: data
+data:
+  logstash.conf: |
+    # ====== DLT 소비 ======
+    input {
+      kafka {
+        bootstrap_servers => "${KAFKA_BOOTSTRAP_SERVERS}"
+        topics => ["${DLT_TOPIC}"]
+        decorate_events => "extended"
+        codec => json
+      }
+    }
+
+    filter {
+      mutate {
+        add_field => {
+          "errorMessage" => "%{[@metadata][kafka][headers][kafka_dlt-exception-message]}"
+        }
+      }
+    }
+
+    output {
+      elasticsearch {
+        hosts => ["${ES_URI}"]              # 예: http://elastic-es-http.data.svc:9200
+        user  => "${ES_USERNAME}"
+        password => "${ES_PASSWORD}"
+        index => "common-log"
+      }
+    }
+
+    # ====== 검색 로그 소비 ======
+    input {
+      kafka {
+        bootstrap_servers => "${KAFKA_BOOTSTRAP_SERVERS}"
+        topics => ["${SEARCH_TOPIC}"]       # 예: search-log
+        group_id => "logstash-search-group"
+        codec => "json"
+        partition_assignment_strategy => "cooperative_sticky"
+
+        consumer_threads => 3
+        auto_offset_reset => "earliest"
+        enable_auto_commit => false
+
+        max_poll_interval_ms => "1000"
+        heartbeat_interval_ms => "3000"
+        session_timeout_ms => "10000"
+      }
+    }
+
+    filter {
+      mutate {
+        rename => { "origin"      => "originLocationCode" }
+        rename => { "destination" => "destinationLocationCode" }
+        convert => { "adults" => "integer" }
+      }
+
+      if ![returnDate] or [returnDate] == "" {
+        mutate { remove_field => ["returnDate"] }
+      }
+
+      mutate { replace => { "routeCode" => "%{originLocationCode}:%{destinationLocationCode}" } }
+
+      if [returnDate] {
+        mutate { replace => { "routeKey" => "%{routeCode}|%{departureDate}|%{returnDate}|%{adults}" } }
+      } else {
+        mutate { replace => { "routeKey" => "%{routeCode}|%{departureDate}|%{adults}" } }
+      }
+    }
+
+    output {
+      elasticsearch {
+        hosts => ["${ES_URI}"]
+        user  => "${ES_USERNAME}"
+        password => "${ES_PASSWORD}"
+        index => "search-log"
+      }
+      stdout { codec => rubydebug }
+    }

@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: logstash
+  namespace: data
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: logstash
+  template:
+    metadata:
+      labels:
+        app: logstash
+    spec:
+      containers:
+        - name: logstash
+          image: docker.elastic.co/logstash/logstash:8.13.4
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 9600   # Logstash Monitoring API
+          envFrom:
+            - secretRef:
+                name: app-secret
+          env:
+            - name: DLT_TOPIC
+              value: "flight-alert.DLT"
+            - name: SEARCH_TOPIC
+              value: "search-log"
+          resources:
+            requests:
+              cpu: 200m
+              memory: 512Mi
+            limits:
+              memory: 1Gi
+          volumeMounts:
+            - name: logstash-pipeline
+              mountPath: /usr/share/logstash/pipeline/logstash.conf
+              subPath: logstash.conf
+      volumes:
+        - name: logstash-pipeline
+          configMap:
+            name: logstash-pipeline
