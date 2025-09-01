@@ -55,8 +55,6 @@ public class PriceAlertConsumerConfig {
         factory.setConsumerFactory(consumerFactory());
 
         factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.MANUAL_IMMEDIATE);
-        factory.getContainerProperties().setPollTimeout(3);
-
         return factory;
     }
 
