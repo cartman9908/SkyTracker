@@ -36,9 +36,9 @@ spring:
 
   data:
     redis:
-      password: ${REDIS_PASSWORD}
+      password: ${SPRING_DATA_REDIS_PASSWORD}
       sentinel:
-        password: ${REDIS_PASSWORD}
+        password: ${SPRING_DATA_REDIS_PASSWORD}
         master: mymaster
         nodes:
           - redis-node-0.redis-headless.data.svc.cluster.local:26379

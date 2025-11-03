@@ -24,7 +24,7 @@ spec:
             - name: elasticsearch
               resources:
                 requests:
-                  cpu: 100m
+                  cpu: 500m
                   memory: 1Gi
                 limits:
                   memory: 2Gi
@@ -45,4 +45,4 @@ spec:
             resources:
               requests:
                 storage: 1Gi
-            storageClassName: hostpath
+            storageClassName: gp2

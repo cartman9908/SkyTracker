@@ -5,6 +5,12 @@ auth:
   enabled: true
   password: "redis"
 
+image:
+  registry: public.ecr.aws
+  repository: bitnami/redis
+  tag: 8.2.1-debian-12-r0
+  pullPolicy: IfNotPresent
+
 sentinel:
   enabled: true
   masterSet: mymaster
@@ -12,8 +18,16 @@ sentinel:
   failoverTimeout: 10000
   service:
     type: ClusterIP
+  image:
+    registry: public.ecr.aws
+    repository: bitnami/redis
+    tag: 8.2.1-debian-12-r0
 
 master:
+  persistence:
+    enabled: true
+    storageClass: gp2
+    size: 8Gi
   resources:
     requests:
       memory: 1Gi
@@ -24,12 +38,20 @@ master:
 
 replica:
   replicaCount: 3
+  persistence:
+    enabled: true
+    storageClass: gp2
+    size: 2Gi
   resources:
     requests:
-      memory: 1Gi
+      memory: 256Mi
     limits:
-      memory: 2Gi
+      memory: 512Mi
   service:
     type: ClusterIP
 
 podAntiAffinityPreset: soft
+
+global:
+  security:
+    allowInsecureImages: true

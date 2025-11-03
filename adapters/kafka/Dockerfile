@@ -3,8 +3,7 @@ WORKDIR /workspace
 COPY . .
 RUN gradle :adapters:kafka:bootJar --no-daemon -x test
 
-
-FROM eclipse-temurin:17-jre
+FROM eclipse-temurin:17-jre-jammy
 WORKDIR /app
 COPY --from=builder /workspace/adapters/kafka/build/libs/*.jar app.jar
 ENTRYPOINT ["java","-jar","app.jar"]

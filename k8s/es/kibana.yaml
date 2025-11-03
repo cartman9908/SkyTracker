@@ -18,10 +18,10 @@ spec:
         - name: kibana
           env:
             - name: NODE_OPTIONS
-              value: "--max-old-space-size=256"
+              value: "--max-old-space-size=1024"   # 최소 1Gi 권장
           resources:
             requests:
-              cpu: 100m
-              memory: 256Mi
+              cpu: 200m
+              memory: 1Gi
             limits:
-              memory: 512Mi
+              memory: 2Gi

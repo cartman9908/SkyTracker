@@ -6,7 +6,7 @@ WORKDIR /app
 COPY ../.. .
 
 # BootJar 빌드
-RUN gradle :apps:api-server:bootJar --no-daemon --stacktrace -x test
+RUN gradle :apps:api-server:bootJar --no-daemon -x test
 
 # 2단계: 실행 이미지
 FROM eclipse-temurin:17-jre

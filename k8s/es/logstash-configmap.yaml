@@ -75,7 +75,7 @@ data:
       elasticsearch {
         hosts => ["${ES_URI}"]
         user  => "${ES_USERNAME}"
-        password => "${ES_PASSWORD}"
+        password => "${ES_PASSWORD}" 
         index => "search-log"
       }
       stdout { codec => rubydebug }

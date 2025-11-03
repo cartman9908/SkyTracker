@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class RedissonConfig {
 
-    @Value("${REDIS_PASSWORD}")
+    @Value("${SPRING_DATA_REDIS_PASSWORD}")
     private String redisPassword;
 
     @Bean(destroyMethod = "shutdown")
