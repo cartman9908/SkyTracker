@@ -7,7 +7,7 @@ spec:
   version: 8.13.4
   http:
     tls:
-      selfSignedCertificate:
+      selfSignedCertificcate:
         disabled: true
   nodeSets:
     - name: default
@@ -45,4 +45,4 @@ spec:
             resources:
               requests:
                 storage: 1Gi
-            storageClassName: gp2
+            storageClassName: hostpath

@@ -2,12 +2,14 @@ package com.skytracker.handler;
 
 import com.skytracker.security.auth.CustomUserDetails;
 import com.skytracker.security.auth.JwtUtils;
+import com.skytracker.service.TokenBlackListService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
@@ -20,6 +22,7 @@ import java.io.IOException;
 public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
     private final JwtUtils jwtUtils;
+    private final TokenBlackListService tokenBlackListService;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
@@ -27,11 +30,12 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         String email = customUserDetails.getEmail();
 
         String accessToken = jwtUtils.generateToken(email);
-        log.info("Successfully generate access token {}", accessToken);
         String refreshToken = jwtUtils.generateRefreshToken(email);
-        log.info("Successfully generate refreshToken token {}", refreshToken);
 
-        response.setHeader("Authorization", "Bearer " + accessToken);
+        if(tokenBlackListService.isBlackList(accessToken)) {
+            response.setStatus(HttpStatus.UNAUTHORIZED.value());
+            return;
+        }
 
         Cookie refreshTokenCookie = new Cookie("refresh_token", refreshToken);
         refreshTokenCookie.setHttpOnly(true);
@@ -44,6 +48,6 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         response.setCharacterEncoding("UTF-8");
         response.getWriter().write("{\"accessToken\": \"" + accessToken + "\"}");
 
-//        response.encodeRedirectURL()
+//        response.encodeRedirectURL();
     }
 }

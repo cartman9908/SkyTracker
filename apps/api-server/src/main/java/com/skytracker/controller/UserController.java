@@ -83,7 +83,8 @@ public class UserController {
     /**
      * accessToken 재발금
      */
-    @PostMapping("/refresh-toekn")
+
+    @PostMapping("/refresh-token")
     public ResponseEntity<?> refreshToken(HttpServletRequest request) {
 
         Cookie[] cookies = request.getCookies();

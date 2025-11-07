@@ -4,10 +4,6 @@ metadata: { name: data }
 ---
 apiVersion: v1
 kind: Namespace
-metadata: { name: skytracker }
----
-apiVersion: v1
-kind: Namespace
 metadata: {name: apps}
 ---
 apiVersion: v1

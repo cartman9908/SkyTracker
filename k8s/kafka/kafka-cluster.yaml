@@ -25,7 +25,7 @@ spec:
     storage:
       type: persistent-claim
       size: 2Gi
-      class: gp2
+      class: hostpath
   zookeeper:
     replicas: 1
     storage:
