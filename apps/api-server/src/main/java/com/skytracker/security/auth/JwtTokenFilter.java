@@ -25,6 +25,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     private final TokenBlackListService tokenBlackListService;
     private final CustomUserDetailsService userDetailsService;
 
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String token = resolveToken(request);
