@@ -11,9 +11,11 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 @Slf4j
 @Component
@@ -23,6 +25,21 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     private final JwtUtils jwtUtils;
     private final TokenBlackListService tokenBlackListService;
     private final CustomUserDetailsService userDetailsService;
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        String[] excludePatterns = {
+                "/oauth2/**",
+                "/login/oauth2/**",
+                "/api/flights/search",
+                "/api/flights/hot-routes",
+                "/api/user/refresh-token"
+        };
+
+        String path = request.getRequestURI();
+        AntPathMatcher matcher = new AntPathMatcher();
+        return Arrays.stream(excludePatterns).anyMatch(p -> matcher.match(p, path));
+    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
