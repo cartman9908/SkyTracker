@@ -68,6 +68,11 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
         log.info("token = {}", token);
 
+        if (token == null) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         if (tokenBlackListService.isBlackList(token)) {
             log.info("Blacklisted token: {}", token);
             filterChain.doFilter(request, response);
@@ -76,8 +81,14 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
         String username = jwtUtils.extractUsername(token);
 
-        if (username == null || SecurityContextHolder.getContext().getAuthentication() != null) {
+        if (username == null) {
             log.info("Invalid token, Incorrect username : {}", username);
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        if (SecurityContextHolder.getContext().getAuthentication() != null) {
+            // 이미 인증된 상태면 JWT 인증 스킵
             filterChain.doFilter(request, response);
             return;
         }
