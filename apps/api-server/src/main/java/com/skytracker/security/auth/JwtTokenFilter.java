@@ -12,6 +12,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.util.AntPathMatcher;
+import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
@@ -44,7 +45,16 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
+        String method = request.getMethod();
+        String uri = request.getRequestURI();
+        String query = request.getQueryString();
+        String referer = request.getHeader("Referer");
+        String ua = request.getHeader("User-Agent");
+
         String header = request.getHeader("Authorization");
+
+        log.info("Req {} {}{} | Referer={} | UA={} | Authorization={}",
+                method, uri, (query != null ? "?" + query : ""), referer, ua, header);
 
         log.info("Authorization Header = {}", header);
 
@@ -53,7 +63,10 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             return;
         }
 
+
         String token = header.substring(7);
+
+        log.info("token = {}", token);
 
         if (tokenBlackListService.isBlackList(token)) {
             log.info("Blacklisted token: {}", token);
@@ -70,6 +83,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         }
 
         CustomUserDetails userDetails = (CustomUserDetails) userDetailsService.loadUserByUsername(username);
+
         if (jwtUtils.isValidToken(token, userDetails.getUsername())){
             log.info("Successfully validate token");
             setAuthentication(userDetails, request);
