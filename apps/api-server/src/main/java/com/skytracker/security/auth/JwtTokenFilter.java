@@ -10,13 +10,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.stereotype.Component;
-import org.springframework.util.AntPathMatcher;
+import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
 
 @Slf4j
 @Component
@@ -27,33 +27,21 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     private final TokenBlackListService tokenBlackListService;
     private final CustomUserDetailsService userDetailsService;
 
-    private static final List<String> WHITELISTED_URLS = Arrays.asList(
-            "/oauth2/**",
-            "/login/oauth2/**",
-            "/api/flights/search",
-            "/api/flights/hot-routes",
-            "/api/user/refresh-token"
-    );
-
-    @Override
-    protected boolean shouldNotFilter(HttpServletRequest request) {
-        String requestURI = request.getRequestURI();
-        return WHITELISTED_URLS.stream().anyMatch(requestURI::startsWith);
-    }
-
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String token = resolveToken(request);
 
-        log.info("Jwt token: {}", token);
+        if (!StringUtils.hasText(token)) {
+            log.info("Jwt token is empty");
+            filterChain.doFilter(request, response);
+            return;
+        }
 
         if (tokenBlackListService.isBlackList(token)) {
             log.info("Blacklisted token: {}", token);
             filterChain.doFilter(request, response);
             return;
         }
-
-        log.info("Found token: {}", token);
 
         String username = jwtUtils.extractUsername(token);
 
