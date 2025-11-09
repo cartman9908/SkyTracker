@@ -16,6 +16,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.List;
 
 @Slf4j
 @Component
@@ -26,19 +27,18 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     private final TokenBlackListService tokenBlackListService;
     private final CustomUserDetailsService userDetailsService;
 
+    private static final List<String> WHITELISTED_URLS = Arrays.asList(
+            "/oauth2/**",
+            "/oauth2/login",
+            "/api/flights/search",
+            "/api/flights/hot-routes",
+            "/api/user/refresh-token"
+    );
+
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
-        String[] excludePatterns = {
-                "/oauth2/**",
-                "/login/oauth2/**",
-                "/api/flights/search",
-                "/api/flights/hot-routes",
-                "/api/user/refresh-token"
-        };
-
-        String path = request.getRequestURI();
-        AntPathMatcher matcher = new AntPathMatcher();
-        return Arrays.stream(excludePatterns).anyMatch(p -> matcher.match(p, path));
+        String requestURI = request.getRequestURI();
+        return WHITELISTED_URLS.stream().anyMatch(requestURI::startsWith);
     }
 
     @Override
