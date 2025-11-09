@@ -29,7 +29,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
     private static final List<String> WHITELISTED_URLS = Arrays.asList(
             "/oauth2/**",
-            "/oauth2/login",
+            "/login/oauth2/**",
             "/api/flights/search",
             "/api/flights/hot-routes",
             "/api/user/refresh-token"

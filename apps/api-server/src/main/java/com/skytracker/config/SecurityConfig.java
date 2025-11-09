@@ -26,14 +26,13 @@ public class SecurityConfig{
 
         http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers( "/oauth2/**", "/oauth2/login",
+                        .requestMatchers( "/oauth2/**", "/login/oauth2/**",
                                 "/api/flights/search", "/api/flights/hot-routes"
                                 ,"/api/user/refresh-token").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class)
                 .oauth2Login(oauth2 -> oauth2
-                        .loginPage("/oauth2/login")
                         .defaultSuccessUrl("/loginSuccess")
                         .userInfoEndpoint(userInfo -> userInfo
                                 .userService(customOAuth2UserService))
