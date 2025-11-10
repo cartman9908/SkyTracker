@@ -10,9 +10,7 @@ public class KakaoUserInfo implements Oauth2UserInfo{
     private final Map<String, Object> attributes;
 
     @Override
-    public String getProviderId() {
-        return (String) attributes.get("id");
-    }
+    public String getProviderId() { return String.valueOf(attributes.get("id")); }
 
     @Override
     public String getProvider() {
