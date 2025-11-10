@@ -12,6 +12,7 @@ RUN gradle :apps:api-server:bootJar --no-daemon -x test
 FROM eclipse-temurin:17-jre
 
 WORKDIR /app
-COPY build/libs/*.jar app.jar
+
+COPY --from=builder /app/apps/api-server/build/libs/*.jar app.jar
 
 ENTRYPOINT ["java","-jar","app.jar"]
