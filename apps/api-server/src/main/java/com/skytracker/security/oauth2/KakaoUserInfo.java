@@ -3,9 +3,11 @@ package com.skytracker.security.oauth2;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.Map;
 
+@Slf4j
 @RequiredArgsConstructor
 public class KakaoUserInfo implements Oauth2UserInfo{
 
@@ -13,6 +15,8 @@ public class KakaoUserInfo implements Oauth2UserInfo{
 
     @Override
     public String getProviderId() {
+        log.info("attributes: {}", attributes);
+        log.info("id: {}", attributes.get("id"));
         return attributes.get("id").toString();
     }
 
@@ -25,6 +29,7 @@ public class KakaoUserInfo implements Oauth2UserInfo{
     public String getEmail() {
         Map<String, Object> kakaoAccount = getAccount(attributes);
 
+        log.info("email: {}", kakaoAccount.get("email"));
         return (String) kakaoAccount.get("email");
     }
 
@@ -32,6 +37,10 @@ public class KakaoUserInfo implements Oauth2UserInfo{
     public String getName() {
         Map<String, Object> kakaoAccount = getAccount(attributes);
         Map<String, Object> profile = getProfile(kakaoAccount);
+
+
+        log.info("profile: {}", profile);
+        log.info("profile: {}", profile.get("name"));
 
         return (String) profile.get("name");
     }
