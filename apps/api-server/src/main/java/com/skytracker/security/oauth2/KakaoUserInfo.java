@@ -9,7 +9,7 @@ import java.util.Map;
 
 @Slf4j
 @RequiredArgsConstructor
-public class KakaoUserInfo implements Oauth2UserInfo{
+public class KakaoUserInfo implements Oauth2UserInfo {
 
     private final Map<String, Object> attributes;
 
