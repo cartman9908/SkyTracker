@@ -1,16 +1,24 @@
 package com.skytracker.security.oauth2;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.Map;
 
+@Slf4j
 @RequiredArgsConstructor
 public class KakaoUserInfo implements Oauth2UserInfo {
 
     private final Map<String, Object> attributes;
 
     @Override
-    public String getProviderId() { return String.valueOf(attributes.get("id")); }
+    public String getProviderId() {
+        log.info("attributes: {}", attributes);
+        log.info("id: {}", attributes.get("id"));
+        return attributes.get("id").toString();
+    }
 
     @Override
     public String getProvider() {
@@ -19,11 +27,40 @@ public class KakaoUserInfo implements Oauth2UserInfo {
 
     @Override
     public String getEmail() {
-        return (String) attributes.get("email");
+        Map<String, Object> kakaoAccount = getAccount(attributes);
+
+        log.info("email: {}", kakaoAccount.get("email"));
+        return (String) kakaoAccount.get("email");
     }
 
     @Override
     public String getName() {
-        return (String) attributes.get("name");
+        Map<String, Object> kakaoAccount = getAccount(attributes);
+        Map<String, Object> profile = getProfile(kakaoAccount);
+
+        log.info("profile: {}", profile);
+        log.info("profile: {}", profile.get("nickname"));
+
+        return (String) profile.get("nickname");
+    }
+
+    private Map<String, Object> getAccount(Map<String, Object> attributes) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        TypeReference<Map<String, Object>> typeRef = new TypeReference<>() {
+        };
+
+        Object kakaoAccount = attributes.get("kakao_account");
+
+        return objectMapper.convertValue(kakaoAccount, typeRef);
+    }
+
+    private Map<String, Object> getProfile(Map<String, Object> kakaoAccount) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        TypeReference<Map<String, Object>> typeRef = new TypeReference<>() {
+        };
+
+        Object profile = kakaoAccount.get("profile");
+
+        return objectMapper.convertValue(profile, typeRef);
     }
 }
