@@ -38,7 +38,6 @@ public class KakaoUserInfo implements Oauth2UserInfo{
         Map<String, Object> kakaoAccount = getAccount(attributes);
         Map<String, Object> profile = getProfile(kakaoAccount);
 
-
         log.info("profile: {}", profile);
         log.info("profile: {}", profile.get("nickname"));
 

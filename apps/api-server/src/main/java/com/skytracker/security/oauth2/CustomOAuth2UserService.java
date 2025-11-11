@@ -42,9 +42,9 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         if ("google".equals(registrationId)) {
             return new GoogleUserInfo(userAttributes);
         } else if ("kakao".equals(registrationId)) {
-            log.info("userAttributes {}", userAttributes);
             return new KakaoUserInfo(userAttributes);
         } else if ("naver".equals(registrationId)) {
+            log.info("userAttributes: {}", userAttributes);
             return new NaverUserinfo(userAttributes);
         }
         throw new OAuth2AuthenticationException("Unsupported provider: " + registrationId);
