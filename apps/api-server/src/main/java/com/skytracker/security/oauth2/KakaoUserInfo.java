@@ -51,7 +51,7 @@ public class KakaoUserInfo implements Oauth2UserInfo{
         TypeReference<Map<String, Object>> typeRef = new TypeReference<>() {
         };
 
-        Object profile = attributes.get("profile");
+        Object profile = kakaoAccount.get("profile");
 
         return objectMapper.convertValue(profile, typeRef);
     }
