@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 
-import java.util.HashMap;
 import java.util.Map;
 
 @RequiredArgsConstructor
@@ -14,7 +13,7 @@ public class KakaoUserInfo implements Oauth2UserInfo{
 
     @Override
     public String getProviderId() {
-        return (String) attributes.get("provider_id");
+        return (String) attributes.get("id");
     }
 
     @Override
@@ -24,19 +23,20 @@ public class KakaoUserInfo implements Oauth2UserInfo{
 
     @Override
     public String getEmail() {
-        Map<String, Object> kakaoAccount = getKakaoAccount(attributes);
+        Map<String, Object> kakaoAccount = getAccount(attributes);
 
         return (String) kakaoAccount.get("email");
     }
 
     @Override
     public String getName() {
-        Map<String, Object> kakaoAccount = getKakaoAccount(attributes);
+        Map<String, Object> kakaoAccount = getAccount(attributes);
+        Map<String, Object> profile = getProfile(kakaoAccount);
 
-        return (String) kakaoAccount.get("name");
+        return (String) profile.get("name");
     }
 
-    private Map<String, Object> getKakaoAccount(Map<String, Object> attributes) {
+    private Map<String, Object> getAccount(Map<String, Object> attributes) {
         ObjectMapper objectMapper = new ObjectMapper();
         TypeReference<Map<String, Object>> typeRef = new TypeReference<>() {
         };
@@ -44,5 +44,15 @@ public class KakaoUserInfo implements Oauth2UserInfo{
         Object kakaoAccount = attributes.get("kakao_account");
 
         return objectMapper.convertValue(kakaoAccount, typeRef);
+    }
+
+    private Map<String, Object> getProfile(Map<String, Object> kakaoAccount) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        TypeReference<Map<String, Object>> typeRef = new TypeReference<>() {
+        };
+
+        Object profile = attributes.get("profile");
+
+        return objectMapper.convertValue(profile, typeRef);
     }
 }
