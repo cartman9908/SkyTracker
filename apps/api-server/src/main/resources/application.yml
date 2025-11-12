@@ -1,7 +1,16 @@
-spring:
-  server:
-    forward-headers-strategy: framework
+server:
+  port: 8080
+  forward-headers-strategy: framework
 
+logging:
+  level:
+    org.springframework.security: DEBUG
+    org.springframework.web.client.RestTemplate: DEBUG
+    org.springframework.security.oauth2.client: DEBUG
+    org.springframework.security.oauth2.core: DEBUG
+    org.springframework.security.oauth2.client.endpoint: DEBUG
+
+spring:
   security:
     oauth2:
       client:
@@ -81,5 +90,3 @@ jwt:
   expiration: ${JWT_EXPIRATION}
   refreshExpiration: ${JWT_REFRESH_EXPIRATION}
 
-server:
-  port: 8080
