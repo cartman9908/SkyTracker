@@ -11,6 +11,9 @@ logging:
     org.springframework.security.oauth2.client.endpoint: TRACE
 
 spring:
+  server:
+    forward-headers-strategy: framework
+
   security:
     oauth2:
       client:
