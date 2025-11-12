@@ -30,7 +30,7 @@ public class  SecurityConfig{
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers( "/oauth2/**", "/login/oauth2/**",
                                 "/api/flights/search", "/api/flights/hot-routes"
-                                ,"/api/user/refresh-token").permitAll()
+                                ,"/api/user/refresh-token", "/chat").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class)
