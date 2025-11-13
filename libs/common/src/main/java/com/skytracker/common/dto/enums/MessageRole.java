@@ -5,10 +5,10 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public enum TripType {
+public enum MessageRole {
 
-    ROUND_TRIP("ROUND_TRIP"),
-    ONE_WAY("ONE_WAY");
+    USER("user"),
+    AI("gpt");
 
     private final String value;
 }

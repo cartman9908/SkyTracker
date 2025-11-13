@@ -1,19 +1,19 @@
-package com.skytracker.service;
+package com.skytracker.service.openai;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 import java.util.Map;
 
-@Service
+@Component
 @RequiredArgsConstructor
-public class OpenAiService {
+public class OpenAiClient {
 
     private final RestTemplate restTemplate;
 
@@ -25,11 +25,21 @@ public class OpenAiService {
 
     private static final String OPENAI_CHAT_URL = "https://api.openai.com/v1/chat/completions";
 
-    public String ask(String message, String sessionId) {
+    public String aiMessage(String message) {
+
+        Map<String, Object> systemPrompt = Map.of(
+                "role", "system",
+                "content", "당신은 항공권 검색 도우미입니다. 친절하고 명확하게 답변합니다."
+        );
+
+        Map<String, Object> userMsg = Map.of(
+                "role", "user",
+                "content", message
+        );
 
         Map<String, Object> requestBody = Map.of(
                 "model", modelName,
-                "messages", List.of(Map.of("role", "user", "content", message))
+                "messages", List.of(systemPrompt, userMsg)
         );
 
         HttpHeaders headers = new HttpHeaders();

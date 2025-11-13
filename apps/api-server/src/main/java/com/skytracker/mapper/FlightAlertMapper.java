@@ -5,7 +5,6 @@ import com.skytracker.entity.FlightAlert;
 
 public class FlightAlertMapper {
 
-
     /**
      * FlightAlertRequestDto → FlightAlert 변환
      */

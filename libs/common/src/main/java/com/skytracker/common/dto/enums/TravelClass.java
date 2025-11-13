@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum TravelClass {
+
     ECONOMY("ECONOMY"),
     PREMIUM_ECONOMY("PREMIUM_ECONOMY"),
     BUSINESS("BUSINESS"),
