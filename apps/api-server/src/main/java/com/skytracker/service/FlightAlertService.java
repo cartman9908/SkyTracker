@@ -73,6 +73,7 @@ public class FlightAlertService {
                 if (subscribers.isEmpty()) {
                     throw new EmptyAlertSubscribersException();
                 }
+
                 subscribers.stream()
                         .filter(UserFlightAlert::isActive)
                         .map(UserFlightAlertMapper::from)
