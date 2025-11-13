@@ -4,7 +4,8 @@ server:
 logging:
   level:
     org.springframework.security: DEBUG
-    org.springframework.web.client.RestTemplate: DEBUG
+    org.springframework.security.oauth2: TRACE
+    org.springframework.web.client.RestTemplate: TRACE
     org.springframework.security.oauth2.client: DEBUG
     org.springframework.security.oauth2.core: DEBUG
     org.springframework.security.oauth2.client.endpoint: DEBUG
