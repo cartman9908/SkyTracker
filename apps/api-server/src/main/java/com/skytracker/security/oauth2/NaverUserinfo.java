@@ -1,5 +1,7 @@
 package com.skytracker.security.oauth2;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Map;
@@ -11,7 +13,8 @@ public class NaverUserinfo implements Oauth2UserInfo {
 
     @Override
     public String getProviderId() {
-        return (String) attributes.get("provider");
+        Map<String, Object> response = getResponse(attributes);
+        return (String) response.get("id");
     }
 
     @Override
@@ -21,11 +24,23 @@ public class NaverUserinfo implements Oauth2UserInfo {
 
     @Override
     public String getEmail() {
-        return (String) attributes.get("email");
+        Map<String, Object> response = getResponse(attributes);
+        return (String) response.get("email");
     }
 
     @Override
     public String getName() {
-        return (String) attributes.get("name");
+        Map<String, Object> response = getResponse(attributes);
+        return (String) response.get("name");
+    }
+
+    private Map<String, Object> getResponse(Map<String,Object> attributes) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        TypeReference<Map<String, Object>> typeRef = new TypeReference<>() {
+        };
+
+        Object Response = attributes.get("response");
+
+        return objectMapper.convertValue(Response, typeRef);
     }
 }
