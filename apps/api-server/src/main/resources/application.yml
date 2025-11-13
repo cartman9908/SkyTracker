@@ -38,14 +38,12 @@ spring:
           naver:
             client-id: ${NAVER_CLIENT_ID}
             client-secret: ${NAVER_CLIENT_SECRET}
-            client-name: Naver
+            client-name: naver
             authorization-grant-type: authorization_code
-            client-authentication-method: client_secret_post
             redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
             scope:
               - nickname
               - email
-            provider: naver
 
         provider:
           kakao:
