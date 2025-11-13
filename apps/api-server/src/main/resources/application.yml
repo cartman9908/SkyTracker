@@ -10,9 +10,6 @@ logging:
     org.springframework.security.oauth2.client.endpoint: DEBUG
 
 spring:
-  server:
-    forward-headers-strategy: framework
-
   security:
     oauth2:
       client:
