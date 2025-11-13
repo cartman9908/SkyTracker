@@ -41,7 +41,7 @@ public class ChatMessageService {
     @Transactional(readOnly = true)
     public List<ChatResponseDto> getRecentMessages(ChatRoom room) {
         List<ChatMessage> recentAsc =
-                chatMessageRepository.findTop20ByChatRoomOrderByCreatedAtAsc(room);
+                chatMessageRepository.findTop20ByChatRoomOrderByCreateTimeAsc(room);
 
         return recentAsc.stream()
                 .map(ChatResponseDto::from)
