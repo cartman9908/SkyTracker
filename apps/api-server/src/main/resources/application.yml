@@ -45,6 +45,7 @@ spring:
             scope:
               - nickname
               - email
+            provider: naver
 
         provider:
           kakao:
