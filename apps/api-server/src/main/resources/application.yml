@@ -38,9 +38,9 @@ spring:
           naver:
             client-id: ${NAVER_CLIENT_ID}
             client-secret: ${NAVER_CLIENT_SECRET}
-            client-name: naver
+            client-name: Naver
             authorization-grant-type: authorization_code
-            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+            redirect-uri: "https://vogie-perfunctorily-jayleen.ngrok-free.dev/login/oauth2/code/{registrationId}"
             scope:
               - nickname
               - email
