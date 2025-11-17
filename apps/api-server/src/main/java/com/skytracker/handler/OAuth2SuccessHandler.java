@@ -32,6 +32,8 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         String accessToken = jwtUtils.generateToken(email);
         String refreshToken = jwtUtils.generateRefreshToken(email);
 
+        response.addHeader("Authorization", "Bearer " + accessToken);
+
         if(tokenBlackListService.isBlackList(accessToken)) {
             response.setStatus(HttpStatus.UNAUTHORIZED.value());
             return;
