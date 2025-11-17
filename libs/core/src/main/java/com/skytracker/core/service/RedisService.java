@@ -60,11 +60,14 @@ public class RedisService {
     }
 
     public Boolean isBlackListed(String key) {
-        Boolean value = (Boolean) redisTemplate.opsForValue().get(key);
-        return value != null && value;
+        Object value = redisTemplate.opsForValue().get(key);
+        if (value == null) {
+            return false;
+        }
+        return Boolean.parseBoolean(value.toString());
     }
 
     public void setBlackList(String key, boolean value, long ttl, TimeUnit unit) {
-        redisTemplate.opsForValue().set(key, value, ttl, unit);
+        redisTemplate.opsForValue().set(key, String.valueOf(value), ttl, unit);
     }
 }
