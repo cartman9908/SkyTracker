@@ -55,7 +55,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         }
 
         CustomUserDetails userDetails = (CustomUserDetails) userDetailsService.loadUserByUsername(username);
-        if (jwtUtils.isValidToken(token, userDetails.getUsername())){
+        if (jwtUtils.isValidToken(token, userDetails.getEmail())){
             log.info("Successfully validate token");
             setAuthentication(userDetails, request);
         }
