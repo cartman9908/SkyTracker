@@ -5,9 +5,11 @@ import com.skytracker.entity.User;
 import com.skytracker.repository.ChatRoomRepository;
 import com.skytracker.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -28,6 +30,8 @@ public class ChatRoomService {
         ChatRoom chatRoom = ChatRoom.builder()
                 .user(user)
                 .build();
+
+        log.info("create chat room: {}", chatRoom.getId());
 
         return chatRoomRepository.save(chatRoom);
     }

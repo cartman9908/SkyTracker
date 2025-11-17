@@ -28,7 +28,7 @@ public class  SecurityConfig{
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers( "/oauth2/**", "/login/oauth2/**",
                                 "/api/flights/search", "/api/flights/hot-routes"
-                                ,"/api/user/refresh-token", "/chatRoom", "/ask").permitAll()
+                                ,"/api/user/refresh-token").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class)
