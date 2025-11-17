@@ -54,7 +54,6 @@ public class FlightTrackingService {
 
     /**
      * Redis 에서 상위 인기 노선 10개 Get
-     *
      */
     private List<RouteAggregationDto> getCachedHotRoutes() {
         List<Object> rawList = redisService.getHashValues(RedisKeys.HOT_ROUTES);

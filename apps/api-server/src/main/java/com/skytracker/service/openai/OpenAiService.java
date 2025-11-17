@@ -1,6 +1,5 @@
 package com.skytracker.service.openai;
 
-import com.skytracker.common.dto.enums.MessageRole;
 import com.skytracker.dto.openai.ChatResponseDto;
 import com.skytracker.entity.ChatRoom;
 import lombok.RequiredArgsConstructor;
