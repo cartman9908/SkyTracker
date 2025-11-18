@@ -1,5 +1,6 @@
 package com.skytracker.controller;
 
+import com.skytracker.dto.RefreshTokenRequest;
 import com.skytracker.dto.user.UserResponseDto;
 import com.skytracker.dto.user.UserUpdateRequestDto;
 import com.skytracker.security.auth.CustomUserDetails;
@@ -10,6 +11,7 @@ import com.skytracker.validation.CustomValidators;
 import com.skytracker.validation.ValidationSequence;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -84,19 +86,9 @@ public class UserController {
      * accessToken 재발금
      */
     @PostMapping("/refresh-token")
-    public ResponseEntity<?> refreshToken(HttpServletRequest request) {
+    public ResponseEntity<?> refreshToken(@RequestBody RefreshTokenRequest request) {
 
-        Cookie[] cookies = request.getCookies();
-
-        if (cookies == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Refresh token failed");
-        }
-
-        String refreshToken = Arrays.stream(cookies)
-                .filter(cookie -> "refresh_token".equals(cookie.getName()))
-                .map(Cookie::getValue)
-                .findFirst()
-                .orElseThrow(null);
+        String refreshToken = request.getRefreshToken();
 
         if (refreshToken == null || jwtUtil.isTokenExpired(refreshToken)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Refresh token expired");
@@ -109,6 +101,6 @@ public class UserController {
         String username = jwtUtil.extractUsername(refreshToken);
         String newAccessToken = jwtUtil.generateToken(username);
 
-        return ResponseEntity.ok("{\"newAccessToken\": \"" + newAccessToken + "\"}");
+        return ResponseEntity.ok("{\"accessToken\": \"" + newAccessToken + "\"}");
     }
 }

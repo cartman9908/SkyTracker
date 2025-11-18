@@ -4,7 +4,6 @@ import com.skytracker.security.auth.CustomUserDetails;
 import com.skytracker.security.auth.JwtUtils;
 import com.skytracker.service.TokenBlackListService;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -32,24 +31,14 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         String accessToken = jwtUtils.generateToken(email);
         String refreshToken = jwtUtils.generateRefreshToken(email);
 
-        response.addHeader("Authorization", "Bearer " + accessToken);
-
         if(tokenBlackListService.isBlackList(accessToken)) {
             response.setStatus(HttpStatus.UNAUTHORIZED.value());
             return;
         }
 
-        Cookie refreshTokenCookie = new Cookie("refresh_token", refreshToken);
-        refreshTokenCookie.setHttpOnly(true);
-        refreshTokenCookie.setSecure(true);
-        refreshTokenCookie.setPath("/");
-        refreshTokenCookie.setMaxAge(Math.toIntExact(jwtUtils.getExpiration()));
-        response.addCookie(refreshTokenCookie);
-
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
-        response.getWriter().write("{\"accessToken\": \"" + accessToken + "\"}");
-
-//        response.encodeRedirectURL();
+        response.getWriter().write("{\"accessToken\": \"" + accessToken + "\"" + ", "
+                + "\"refreshToken\": \"" + refreshToken + "\"}");
     }
 }
