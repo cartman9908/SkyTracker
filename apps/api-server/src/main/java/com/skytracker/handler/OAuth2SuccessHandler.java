@@ -32,12 +32,16 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
         String accessToken = jwtUtils.generateToken(email);
 
+        String redirectUri = request.getParameter("redirect_uri");
+
+        if (redirectUri == null || redirectUri.isBlank()) {
+            redirectUri = "skytracker://redirect";
+        }
+
         if(tokenBlackListService.isBlackList(accessToken)) {
             response.setStatus(HttpStatus.UNAUTHORIZED.value());
             return;
         }
-
-        String redirectUri = "skytracker://redirect";
 
         String targetUrl = redirectUri + "?accessToken=" + URLEncoder.encode(accessToken, StandardCharsets.UTF_8);
 
