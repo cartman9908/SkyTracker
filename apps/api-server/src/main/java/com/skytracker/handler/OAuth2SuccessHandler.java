@@ -14,6 +14,8 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 @Slf4j
 @Component
@@ -29,16 +31,16 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         String email = customUserDetails.getEmail();
 
         String accessToken = jwtUtils.generateToken(email);
-        String refreshToken = jwtUtils.generateRefreshToken(email);
 
         if(tokenBlackListService.isBlackList(accessToken)) {
             response.setStatus(HttpStatus.UNAUTHORIZED.value());
             return;
         }
 
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
-        response.getWriter().write("{\"accessToken\": \"" + accessToken + "\"" + ", "
-                + "\"refreshToken\": \"" + refreshToken + "\"}");
+        String redirectUri = "skytracker://redirect";
+
+        String targetUrl = redirectUri + "?accessToken=" + URLEncoder.encode(accessToken, StandardCharsets.UTF_8);
+
+        response.sendRedirect(targetUrl);
     }
 }

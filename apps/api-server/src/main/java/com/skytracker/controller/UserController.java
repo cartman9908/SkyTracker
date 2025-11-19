@@ -9,9 +9,7 @@ import com.skytracker.service.TokenBlackListService;
 import com.skytracker.service.UserService;
 import com.skytracker.validation.CustomValidators;
 import com.skytracker.validation.ValidationSequence;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,8 +18,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Arrays;
 
 
 @RestController
@@ -65,6 +61,15 @@ public class UserController {
         return ResponseEntity.ok("User deleted successfully." + customUserDetails.getUserId());
     }
 
+    /**
+     * 회원 정보창
+     */
+    @GetMapping("/profile-screen")
+    public ResponseEntity<UserResponseDto> profileScreen(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        UserResponseDto user = userService.getUser(customUserDetails.getUserId());
+
+        return ResponseEntity.ok(user);
+    }
 
     /**
      * 로그아웃
@@ -102,5 +107,21 @@ public class UserController {
         String newAccessToken = jwtUtil.generateToken(username);
 
         return ResponseEntity.ok("{\"accessToken\": \"" + newAccessToken + "\"}");
+    }
+
+
+    /**
+     * refreshToken 발급
+     */
+    @PostMapping("/new-refresh-token")
+    public ResponseEntity<?> newRefreshToken(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
+
+        UserResponseDto user = userService.getUser(customUserDetails.getUserId());
+
+        String email = user.getEmail();
+
+        String refreshToken = jwtUtil.generateRefreshToken(email);
+
+        return ResponseEntity.ok("{\"refreshToken\": \"" + refreshToken + "\"}");
     }
 }
