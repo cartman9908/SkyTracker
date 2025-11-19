@@ -117,19 +117,11 @@ public class UserController {
     @PostMapping("/new-refresh-token")
     public ResponseEntity<?> newRefreshToken(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
 
-        log.info("customUserDetails: {}", customUserDetails);
-
         UserResponseDto user = userService.getUser(customUserDetails.getUserId());
-
-        log.info("user: " + user);
 
         String email = user.getEmail();
 
-        log.info("email: " + email);
-
         String refreshToken = jwtUtil.generateRefreshToken(email);
-
-        log.info("refreshToken: " + refreshToken);
 
         return ResponseEntity.ok("{\"refreshToken\": \"" + refreshToken + "\"}");
     }

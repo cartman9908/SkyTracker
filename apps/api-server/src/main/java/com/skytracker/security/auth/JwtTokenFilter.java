@@ -27,9 +27,6 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        log.info("path = {}", request.getRequestURI());
-        log.info("auth = {}", request.getHeader("Authorization"));
-
         String token = resolveToken(request);
         log.info("token = {}", token);
 
@@ -46,7 +43,6 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         }
 
         String username = jwtUtils.extractUsername(token);
-        log.info("username from token = {}", username);
 
         if (username == null) {
             log.info("Invalid token, Incorrect username : {}", username);
@@ -61,8 +57,6 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         }
 
         CustomUserDetails userDetails = (CustomUserDetails) userDetailsService.loadUserByUsername(username);
-
-        log.info("user : {}", userDetails);
 
         if (jwtUtils.isValidToken(token, userDetails.getEmail())){
             log.info("Successfully validate token");
