@@ -13,4 +13,7 @@ public class UserUpdateRequestDto {
 
     @NotBlank(message = "이메일을 입력해주세요.", groups = ValidationGroups.NotBlankGroups.class)
     private String email;
+
+    @NotBlank(message = "닉네임을 입력해주세요.", groups = ValidationGroups.NotBlankGroups.class)
+    private String username;
 }

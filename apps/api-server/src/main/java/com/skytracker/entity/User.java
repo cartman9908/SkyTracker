@@ -56,5 +56,6 @@ public class User extends BaseTimeEntity{
 
     public void update(UserUpdateRequestDto dto) {
         this.email = dto.getEmail();
+        this.username = dto.getUsername();
     }
 }
