@@ -45,6 +45,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         }
 
         String username = jwtUtils.extractUsername(token);
+        log.info("username from token = {}", username);
 
         if (username == null) {
             log.info("Invalid token, Incorrect username : {}", username);
@@ -53,11 +54,15 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         }
 
         if (SecurityContextHolder.getContext().getAuthentication() != null) {
+            log.info("SecurityContext already has auth, skip");
             filterChain.doFilter(request, response);
             return;
         }
 
         CustomUserDetails userDetails = (CustomUserDetails) userDetailsService.loadUserByUsername(username);
+
+        log.info("user : {}", userDetails);
+
         if (jwtUtils.isValidToken(token, userDetails.getEmail())){
             log.info("Successfully validate token");
             setAuthentication(userDetails, request);
