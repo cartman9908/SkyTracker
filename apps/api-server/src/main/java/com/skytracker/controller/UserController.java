@@ -111,7 +111,6 @@ public class UserController {
         return ResponseEntity.ok("{\"accessToken\": \"" + newAccessToken + "\"}");
     }
 
-
     /**
      * refreshToken 발급
      */
