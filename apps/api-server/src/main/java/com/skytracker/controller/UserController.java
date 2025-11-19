@@ -70,10 +70,6 @@ public class UserController {
     public ResponseEntity<UserResponseDto> profileScreen(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
         UserResponseDto user = userService.getUser(customUserDetails.getUserId());
 
-        log.info("User: {}", user);
-        log.info("Username: {}", user.getUsername());
-        log.info("Email: {}", user.getEmail());
-
         return ResponseEntity.ok(user);
     }
 
