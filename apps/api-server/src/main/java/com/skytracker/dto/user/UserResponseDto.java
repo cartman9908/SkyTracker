@@ -14,12 +14,12 @@ public class UserResponseDto {
 
     private Long userId;
     private String email;
-    private String nickname;
+    private String username;
 
     public static UserResponseDto from(User user) {
         return UserResponseDto.builder()
                 .userId(user.getId())
-                .nickname(user.getNickname())
+                .username(user.getUsername())
                 .email(user.getEmail())
                 .build();
     }
