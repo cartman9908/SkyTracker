@@ -34,6 +34,8 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
         String redirectUri = request.getParameter("redirect_uri");
 
+        log.info("redirect uri: {}", redirectUri);
+
         if (redirectUri == null || redirectUri.isBlank()) {
             redirectUri = "skytracker://redirect";
         }
