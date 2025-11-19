@@ -31,6 +31,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         log.info("auth = {}", request.getHeader("Authorization"));
 
         String token = resolveToken(request);
+        log.info("token = {}", token);
 
         if (!StringUtils.hasText(token)) {
             log.info("Jwt token is empty");
