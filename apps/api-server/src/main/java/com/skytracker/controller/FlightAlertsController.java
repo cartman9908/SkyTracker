@@ -49,6 +49,8 @@ public class FlightAlertsController {
     public ResponseEntity<?> deleteAlert(@PathVariable Long alertId,
                                          @AuthenticationPrincipal CustomUserDetails customUserDetails) {
 
+        log.info("Delete alert {}", alertId);
+        log.info("User id {}", customUserDetails.getUserId());
         priceAlertService.deleteUserFlightAlert(customUserDetails.getUserId(), alertId);
         return ResponseEntity.ok().build();
     }
