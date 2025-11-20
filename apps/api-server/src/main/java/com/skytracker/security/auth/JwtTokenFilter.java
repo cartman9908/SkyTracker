@@ -46,6 +46,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
         if (username == null) {
             log.info("Invalid token, Incorrect username : {}", username);
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             filterChain.doFilter(request, response);
             return;
         }
