@@ -28,7 +28,9 @@ public class  SecurityConfig{
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers( "/oauth2/**", "/login/oauth2/**",
                                 "/api/flights/search", "/api/flights/hot-routes"
-                                ,"/api/user/refresh-token").permitAll()
+                                ,"/api/user/refresh-token","/login/oauth2/code/**",
+                                "/oauth2/callback/**",
+                                "/").permitAll()
                         .anyRequest().authenticated()
                 )
                 .oauth2Login(oauth2 -> oauth2
