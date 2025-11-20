@@ -35,7 +35,7 @@ public class PriceAlertService {
         String uniqueKey = dto.buildUniqueKey();
 
         FlightAlert flightAlert = flightAlertRepository.findByUniqueKey(uniqueKey)
-                .orElseGet(() -> flightAlertRepository.save(FlightAlertMapper.toEntity(dto)));
+                .orElseGet(() -> flightAlertRepository.save(FlightAlertMapper.toEntity(dto, uniqueKey)));
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException(userId));

@@ -8,7 +8,7 @@ public class FlightAlertMapper {
     /**
      * FlightAlertRequestDto → FlightAlert 변환
      */
-    public static FlightAlert toEntity(FlightAlertRequestDto dto){
+    public static FlightAlert toEntity(FlightAlertRequestDto dto, String uniqueKey){
         return FlightAlert.builder()
                 .airlineCode(dto.getAirlineCode())
                 .flightNumber(dto.getFlightNumber())
@@ -18,6 +18,7 @@ public class FlightAlertMapper {
                 .travelClass(dto.getTravelClass())
                 .currency(dto.getCurrency())
                 .adults(dto.getAdults())
+                .uniqueKey(uniqueKey)
                 .lastCheckedPrice(dto.getLastCheckedPrice())
                 .build();
     }
