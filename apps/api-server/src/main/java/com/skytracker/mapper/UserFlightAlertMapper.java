@@ -16,6 +16,7 @@ public class UserFlightAlertMapper {
                 .destination(alert.getArrivalAirport())
                 .flightNumber(alert.getFlightNumber())
                 .departureDate(alert.getDepartureDate())
+                .arrivalDate(alert.getArrivalDate())
                 .travelClass(alert.getTravelClass())
                 .airlineCode(alert.getAirlineCode())
                 .lastCheckedPrice(alert.getLastCheckedPrice())
