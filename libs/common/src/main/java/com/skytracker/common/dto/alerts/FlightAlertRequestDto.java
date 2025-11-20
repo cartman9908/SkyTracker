@@ -19,6 +19,7 @@ public class FlightAlertRequestDto {
     private String departureAirport;       // 출발 공항 코드 (예: ICN)
     private String arrivalAirport;         // 도착 공항 코드 (예: LHR)
     private String departureDate;          // 출발 날짜 (예: 2025-07-25)
+    private String arrivalDate;            // 도착 날짜
     private String travelClass;            // 좌석 등급 (예: ECONOMY)
     private String currency;               // 통화 코드 (예: KRW)
     private int adults;                    // 성인 인원 수
@@ -31,6 +32,7 @@ public class FlightAlertRequestDto {
                 departureAirport,
                 arrivalAirport,
                 departureDate,
+                arrivalDate != null ? arrivalDate : "",
                 travelClass,
                 airlineCode,
                 flightNumber
@@ -45,6 +47,7 @@ public class FlightAlertRequestDto {
                 .originLocationAirport(this.departureAirport)
                 .destinationLocationAirport(this.arrivalAirport)
                 .departureDate(this.departureDate)
+                .returnDate(this.arrivalDate)
                 .currencyCode(this.currency)
                 .travelClass(TravelClass.valueOf(this.travelClass))
                 .adults(this.adults)

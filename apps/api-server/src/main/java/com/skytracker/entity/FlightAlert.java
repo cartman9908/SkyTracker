@@ -35,7 +35,7 @@ public class FlightAlert extends BaseTimeEntity{
     @Column(name = "departure_date", nullable = false)
     private String departureDate;
 
-    @Column(name = "arrival_date", nullable = false)
+    @Column(name = "arrival_date")
     private String arrivalDate;
 
     @Column(name = "travel_class")
