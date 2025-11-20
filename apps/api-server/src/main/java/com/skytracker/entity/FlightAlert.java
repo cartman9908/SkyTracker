@@ -67,5 +67,4 @@ public class FlightAlert extends BaseTimeEntity{
         this.lastCheckedPrice = this.newPrice;
         this.newPrice = newPrice;
     }
-
 }

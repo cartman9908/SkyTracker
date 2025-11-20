@@ -46,10 +46,9 @@ public class FlightAlertsController {
     }
 
     @DeleteMapping("/{alertId}")
-    public ResponseEntity<?> deleteAlert(@PathVariable Long alertId,
-                                         @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+    public ResponseEntity<?> deleteAlert(@PathVariable Long alertId) {
 
-        priceAlertService.deleteUserFlightAlert(customUserDetails.getUserId(), alertId);
+        priceAlertService.deleteUserFlightAlert(alertId);
         return ResponseEntity.ok().build();
     }
 }

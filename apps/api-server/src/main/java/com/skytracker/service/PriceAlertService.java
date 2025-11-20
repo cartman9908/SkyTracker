@@ -76,14 +76,12 @@ public class PriceAlertService {
                 .collect(Collectors.toList());
     }
 
-    public void deleteUserFlightAlert(Long userId, Long alertId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException(userId));
+    public void deleteUserFlightAlert(Long alertId) {
+        FlightAlert flightAlert = flightAlertRepository.findById(alertId)
+                        .orElseThrow(() -> new FlightAlertNotFoundException(alertId));
 
-        UserFlightAlert alert = userFlightAlertRepository.findByUserAndFlightAlertId(user, alertId)
-                .orElseThrow(() -> new FlightAlertNotFoundException(alertId));
+        flightAlertRepository.delete(flightAlert);
 
-        userFlightAlertRepository.delete(alert);
         log.info("성공적으로 삭제되었습니다! {}", alertId);
     }
 }
