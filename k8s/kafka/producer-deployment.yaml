@@ -21,5 +21,5 @@ spec:
           image: yeonwu/kafka-producer:latest
           imagePullPolicy: IfNotPresent
           env:
-            - name: KAFKA_BOOTSTRAP_SERVERS
+            - name: SPRING_KAFKA_BOOTSTRAP_SERVERS
               value: my-cluster-kafka-bootstrap:9092
