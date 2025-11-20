@@ -92,6 +92,9 @@ spring:
           - redis-node-1.redis-headless.data.svc.cluster.local:26379
           - redis-node-2.redis-headless.data.svc.cluster.local:26379
 
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
+
 jwt:
   secret: ${JWT_SECRET}
   expiration: ${JWT_EXPIRATION}
