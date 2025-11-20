@@ -1,3 +1,7 @@
+logging:
+  level:
+    org.springframework.boot.context.config: DEBUG
+
 spring:
   kafka:
     bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
