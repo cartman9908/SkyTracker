@@ -61,7 +61,7 @@ public class PriceAlertService {
                 .orElseThrow(() -> new UserNotFoundException(userId));
 
         UserFlightAlert alert = userFlightAlertRepository
-                .findByUserAndFlightAlertId(user, alertId)
+                .findByIdAndUser(alertId, user)
                         .orElseThrow(() -> new FlightAlertNotFoundException(alertId));
 
         alert.setActive(!alert.isActive());
@@ -80,7 +80,7 @@ public class PriceAlertService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException(userId));
 
-        UserFlightAlert alert = userFlightAlertRepository.findByUserAndFlightAlertId(user, alertId)
+        UserFlightAlert alert = userFlightAlertRepository.findByIdAndUser(alertId, user)
                 .orElseThrow(() -> new FlightAlertNotFoundException(alertId));
 
         log.info("user: {}, alert: {}", user, alertId);
