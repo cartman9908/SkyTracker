@@ -37,7 +37,8 @@ public class  SecurityConfig{
                         .userInfoEndpoint(userInfo -> userInfo
                                 .userService(customOAuth2UserService))
                         .successHandler(oAuth2SuccessHandler)
-                )
+                ).exceptionHandling(e -> e
+                        .authenticationEntryPoint(((request, response, authException) -> response.sendError(401))))
                 .addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
