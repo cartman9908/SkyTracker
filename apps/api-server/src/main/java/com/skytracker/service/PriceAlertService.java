@@ -76,8 +76,11 @@ public class PriceAlertService {
                 .collect(Collectors.toList());
     }
 
-    public void deleteUserFlightAlert(Long alertId) {
-        FlightAlert flightAlert = flightAlertRepository.findById(alertId)
+    public void deleteUserFlightAlert(Long userId, Long alertId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException(userId));
+
+        FlightAlert flightAlert = flightAlertRepository.findFlightAlertByUserIdAndAlertId(user.getId(), alertId)
                         .orElseThrow(() -> new FlightAlertNotFoundException(alertId));
 
         flightAlertRepository.delete(flightAlert);
