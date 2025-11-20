@@ -83,11 +83,7 @@ public class PriceAlertService {
         UserFlightAlert alert = userFlightAlertRepository.findByIdAndUser(alertId, user)
                 .orElseThrow(() -> new FlightAlertNotFoundException(alertId));
 
-        log.info("user: {}, alert: {}", user, alertId);
-
         FlightAlert flightAlert = alert.getFlightAlert();
-
-        log.info("flight alert: {}", flightAlert);
 
         flightAlertRepository.delete(flightAlert);
 
