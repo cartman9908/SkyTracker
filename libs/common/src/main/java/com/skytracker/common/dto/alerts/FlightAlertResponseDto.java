@@ -15,6 +15,7 @@ public class FlightAlertResponseDto {
     private String origin;
     private String destination;
     private String departureDate;
+    private String arrivalDate;
     private String returnDate;
     private String airlineCode;
     private String flightNumber;
@@ -23,6 +24,4 @@ public class FlightAlertResponseDto {
     private int targetPrice;
     private int lastCheckedPrice;
     private boolean isActive;
-
-
 }
