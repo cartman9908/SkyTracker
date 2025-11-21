@@ -1,7 +1,6 @@
 package com.skytracker.pricealert.config;
 
 import com.skytracker.pricealert.config.handler.ConsumerErrorsHandler;
-import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.CooperativeStickyAssignor;
 import org.apache.kafka.clients.producer.ProducerConfig;
@@ -51,6 +50,20 @@ public class PriceAlertConsumerConfig {
     }
 
     @Bean
+    public ProducerFactory<String, Object> priceAlertProducerFactory() {
+        Map<String, Object> props = new HashMap<>();
+        props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
+        props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+        props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
+        return new DefaultKafkaProducerFactory<>(props);
+    }
+
+    @Bean
+    public KafkaTemplate<String, Object> priceAlertKafkaTemplate() {
+        return new KafkaTemplate<>(priceAlertProducerFactory());
+    }
+
+    @Bean
     public ConcurrentKafkaListenerContainerFactory<String, Object> kafkaListenerContainerFactory() {
         ConcurrentKafkaListenerContainerFactory<String, Object> factory =
                 new ConcurrentKafkaListenerContainerFactory<>();
@@ -60,17 +73,17 @@ public class PriceAlertConsumerConfig {
         return factory;
     }
 
-//        @Bean
-//        public RetryTopicConfiguration retryTopicConfig(KafkaTemplate<String, Object> priceAlertKafkaTemplate) {
-//            return RetryTopicConfigurationBuilder
-//                    .newInstance()
-//                    .includeTopic("flight-alert")
-//                    .autoCreateTopicsWith(PriceAlertConsumerProperties.REPLICATION_FACTOR, PriceAlertConsumerProperties.REPLICA_COUNT)
-//                    .maxAttempts(PriceAlertConsumerProperties.MAX_ATTEMPT_COUNT)
-//                    .fixedBackOff(PriceAlertConsumerProperties.BACKOFF_PERIOD)
-//                    .listenerFactory(kafkaListenerContainerFactory())
-//                    .dltSuffix(".DLT")
-//                    .dltHandlerMethod(new EndpointHandlerMethod(ConsumerErrorsHandler.class, "postProcessDltMessage"))
-//                    .create(priceAlertKafkaTemplate);
-//        }
+        @Bean
+        public RetryTopicConfiguration retryTopicConfig(KafkaTemplate<String, Object> priceAlertKafkaTemplate) {
+            return RetryTopicConfigurationBuilder
+                    .newInstance()
+                    .includeTopic("flight-alert")
+                    .autoCreateTopicsWith(PriceAlertConsumerProperties.REPLICATION_FACTOR, PriceAlertConsumerProperties.REPLICA_COUNT)
+                    .maxAttempts(PriceAlertConsumerProperties.MAX_ATTEMPT_COUNT)
+                    .fixedBackOff(PriceAlertConsumerProperties.BACKOFF_PERIOD)
+                    .listenerFactory(kafkaListenerContainerFactory())
+                    .dltSuffix(".DLT")
+                    .dltHandlerMethod(new EndpointHandlerMethod(ConsumerErrorsHandler.class, "postProcessDltMessage"))
+                    .create(priceAlertKafkaTemplate);
+        }
 }
