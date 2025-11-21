@@ -62,14 +62,22 @@ public class FlightAlertService {
 
         flightAlertRepository.findAll().forEach(alert -> {
             FlightAlertRequestDto requestDto = FlightAlertMapper.from(alert);
-            int lastCheckedPrice = requestDto.getLastCheckedPrice();
+            Integer lastCheckedPrice = requestDto.getLastCheckedPrice();
 
             log.info("lastCheckedPrice: {}", lastCheckedPrice);
 
             int newPrice = amadeusFlightSearchService.compareFlightsPrice(accessToken, requestDto);
 
+            if (lastCheckedPrice == null) {
+                alert.updateLastCheckedPrice(newPrice);
+                alert.updateNewPrice(null);
+                flightAlertRepository.save(alert);
+                return;
+            }
+
             log.info("newPrice: {}", newPrice);
 
+            alert.updateLastCheckedPrice(newPrice);
             alert.updateNewPrice(newPrice);
             flightAlertRepository.save(alert);
 

@@ -63,7 +63,11 @@ public class FlightAlert extends BaseTimeEntity{
     @OneToMany(mappedBy = "flightAlert", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UserFlightAlert> userFlightAlerts = new ArrayList<>();
 
-    public void updateNewPrice(int newPrice){
-        this.lastCheckedPrice = newPrice;
+    public void updateLastCheckedPrice(Integer price){
+        this.lastCheckedPrice = price;
+    }
+
+    public void updateNewPrice(Integer price){
+        this.newPrice = price;
     }
 }
