@@ -23,7 +23,7 @@ public class FlightAlertRequestDto {
     private String travelClass;            // 좌석 등급 (예: ECONOMY)
     private String currency;               // 통화 코드 (예: KRW)
     private int adults;                    // 성인 인원 수
-    private int lastCheckedPrice;          // 마지막으로 확인된 가격
+    private Integer lastCheckedPrice;          // 마지막으로 확인된 가격
     private Integer newPrice;              // 최신 가격 (갱신 후 저장)
 
 
