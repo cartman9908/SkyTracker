@@ -31,7 +31,7 @@ public class ChatRoomService {
                 .user(user)
                 .build();
 
-        log.info("create chat room: {}", chatRoom.getId());
+        log.info("create chat room username: {}", user.getUsername());
 
         return chatRoomRepository.save(chatRoom);
     }

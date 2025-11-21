@@ -53,7 +53,7 @@ public class JwtUtils {
                 .compact();
     }
 
-    public String extractUsername(String token) {
+    public String extractUserEmail(String token) {
         return extractAllClaims(token).getSubject();
     }
 
@@ -62,7 +62,7 @@ public class JwtUtils {
     }
 
     public boolean isValidToken(String token, String email) {
-        return extractUsername(token).equals(email) && !isTokenExpired(token);
+        return extractUserEmail(token).equals(email) && !isTokenExpired(token);
     }
 
     public boolean isTokenExpired(String token) {

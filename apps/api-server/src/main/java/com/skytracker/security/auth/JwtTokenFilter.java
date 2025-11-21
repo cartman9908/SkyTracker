@@ -42,7 +42,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             return;
         }
 
-        String username = jwtUtils.extractUsername(token);
+        String username = jwtUtils.extractUserEmail(token);
 
         if (username == null) {
             log.info("Invalid token, Incorrect username : {}", username);

@@ -105,7 +105,7 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Blacklist refresh token expired");
         }
 
-        String username = jwtUtil.extractUsername(refreshToken);
+        String username = jwtUtil.extractUserEmail(refreshToken);
         String newAccessToken = jwtUtil.generateToken(username);
 
         return ResponseEntity.ok("{\"accessToken\": \"" + newAccessToken + "\"}");

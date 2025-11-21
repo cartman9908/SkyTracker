@@ -1,0 +1,41 @@
+name: Build & Deploy Price Alert
+
+on:
+  push:
+    branches:
+      - 'feature/**'
+    paths:
+      - 'apps/price-alert/**'
+      - '.github/workflows/price-alert-ci.yml'
+
+jobs:
+  build-and-deploy-price-alert:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Build BootJar
+        run: ./gradlew :apps:price-alert:bootJar -x test
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build Docker Image
+        run: |
+          docker build \
+            -t yeonwoo02/skytracker-price-alert:latest \
+            -f apps/price-alert/Dockerfile .
+
+      - name: Push Image
+        run: docker push yeonwoo02/skytracker-price-alert:latest
