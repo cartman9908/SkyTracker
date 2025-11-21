@@ -3,20 +3,21 @@ package com.skytracker.pricealert.config;
 import com.skytracker.pricealert.config.handler.ConsumerErrorsHandler;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.CooperativeStickyAssignor;
+import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
+import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
-import org.springframework.kafka.core.ConsumerFactory;
-import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
-import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.core.*;
 import org.springframework.kafka.listener.ContainerProperties;
 import org.springframework.kafka.retrytopic.RetryTopicConfiguration;
 import org.springframework.kafka.retrytopic.RetryTopicConfigurationBuilder;
 import org.springframework.kafka.support.EndpointHandlerMethod;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
+import org.springframework.kafka.support.serializer.JsonSerializer;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -49,6 +50,20 @@ public class PriceAlertConsumerConfig {
     }
 
     @Bean
+    public ProducerFactory<String, Object> priceAlertProducerFactory() {
+        Map<String, Object> props = new HashMap<>();
+        props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
+        props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+        props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
+        return new DefaultKafkaProducerFactory<>(props);
+    }
+
+    @Bean
+    public KafkaTemplate<String, Object> priceAlertKafkaTemplate() {
+        return new KafkaTemplate<>(priceAlertProducerFactory());
+    }
+
+    @Bean
     public ConcurrentKafkaListenerContainerFactory<String, Object> kafkaListenerContainerFactory() {
         ConcurrentKafkaListenerContainerFactory<String, Object> factory =
                 new ConcurrentKafkaListenerContainerFactory<>();
@@ -59,7 +74,7 @@ public class PriceAlertConsumerConfig {
     }
 
         @Bean
-        public RetryTopicConfiguration retryTopicConfig(KafkaTemplate<String, Object> kafkaTemplate) {
+        public RetryTopicConfiguration retryTopicConfig(KafkaTemplate<String, Object> priceAlertKafkaTemplate) {
             return RetryTopicConfigurationBuilder
                     .newInstance()
                     .includeTopic("flight-alert")
@@ -69,6 +84,6 @@ public class PriceAlertConsumerConfig {
                     .listenerFactory(kafkaListenerContainerFactory())
                     .dltSuffix(".DLT")
                     .dltHandlerMethod(new EndpointHandlerMethod(ConsumerErrorsHandler.class, "postProcessDltMessage"))
-                    .create(kafkaTemplate);
+                    .create(priceAlertKafkaTemplate);
         }
 }
