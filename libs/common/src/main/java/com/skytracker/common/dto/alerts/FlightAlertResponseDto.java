@@ -20,7 +20,7 @@ public class FlightAlertResponseDto {
     private String flightNumber;
     private String travelClass;
     private String currency;
-    private int targetPrice;
-    private int lastCheckedPrice;
+    private Integer targetPrice;
+    private Integer lastCheckedPrice;
     private boolean isActive;
 }
