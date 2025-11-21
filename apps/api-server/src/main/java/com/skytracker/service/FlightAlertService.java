@@ -58,6 +58,8 @@ public class FlightAlertService {
 
         List<FlightAlertEventMessageDto> eventList = new ArrayList<>();
 
+        log.info("eventList: {}", eventList);
+
         flightAlertRepository.findAll().forEach(alert -> {
             FlightAlertRequestDto requestDto = FlightAlertMapper.from(alert);
             int lastCheckedPrice = requestDto.getLastCheckedPrice();
