@@ -13,7 +13,7 @@ spec:
     spec:
       containers:
         - name: price-alert
-          image: yeonwoo02/price-alert:latest
+          image: yeonwoo02/skytracker-price-alert:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 8080

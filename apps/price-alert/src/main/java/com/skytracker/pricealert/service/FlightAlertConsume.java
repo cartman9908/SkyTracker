@@ -16,14 +16,8 @@ public class FlightAlertConsume {
 
     @KafkaListener(topics = "flight-alert", groupId = "flight-alert-group")
     public void OnMessage(FlightAlertEventMessageDto eventMessageDto, Acknowledgment ack) {
-        log.info("Received event {}", eventMessageDto);
-        try {
-            sendMailService.sendMail(eventMessageDto);
-            log.info("Mail sent successfully for alert: {}", eventMessageDto);
-            ack.acknowledge();
-        } catch (Exception e) {
-            log.error("Failed to send mail for alert: {}", eventMessageDto, e);
-            throw e;
-        }
+        sendMailService.sendMail(eventMessageDto);
+
+        ack.acknowledge();
     }
 }
