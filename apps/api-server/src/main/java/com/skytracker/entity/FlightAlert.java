@@ -64,7 +64,6 @@ public class FlightAlert extends BaseTimeEntity{
     private List<UserFlightAlert> userFlightAlerts = new ArrayList<>();
 
     public void updateNewPrice(int newPrice){
-        this.lastCheckedPrice = this.newPrice;
-        this.newPrice = newPrice;
+        this.lastCheckedPrice = newPrice;
     }
 }
