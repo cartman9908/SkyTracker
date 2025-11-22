@@ -64,6 +64,7 @@ public class FlightAlertService {
             int newPrice = amadeusFlightSearchService.compareFlightsPrice(accessToken, FlightAlertMapper.from(alert));
 
             if (lastCheckedPrice == null) {
+                log.info("last price is null, alert = {}", alert.getId());
                 alert.updateLastCheckedPrice(newPrice);
                 flightAlertRepository.save(alert);
                 return;
