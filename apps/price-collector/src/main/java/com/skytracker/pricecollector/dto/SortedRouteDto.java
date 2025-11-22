@@ -28,7 +28,7 @@ public class SortedRouteDto {
                 .departureAirportCode(outbound.getDepartureAirport())
                 .arrivalAirportCode(outbound.getArrivalAirport())
                 .departureTime(outbound.getDepartureTime().substring(0, 10))
-                .arrivalTime(inbound != null ? inbound.getDepartureTime().substring(0, 10) : null)
+                .arrivalTime(inbound != null ? inbound.getArrivalTime().substring(0, 10) : null)
                 .build();
     }
 }
