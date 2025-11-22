@@ -59,7 +59,9 @@ public class FlightAlertService {
         List<FlightAlertEventMessageDto> eventList = new ArrayList<>();
 
         flightAlertRepository.findAll().forEach(alert -> {
+
             Integer lastCheckedPrice = alert.getLastCheckedPrice();
+            log.info("Before id: {}, lastCheckedPrice: {}", alert.getId(), lastCheckedPrice);
 
             int newPrice = amadeusFlightSearchService.compareFlightsPrice(accessToken, FlightAlertMapper.from(alert));
 
@@ -72,7 +74,7 @@ public class FlightAlertService {
 
             if (newPrice < lastCheckedPrice) {
 
-                log.info("id: {}, before: {}, after: {}", alert.getId(), lastCheckedPrice, newPrice);
+                log.info("After id: {}, before: {}, after: {}", alert.getId(), lastCheckedPrice, newPrice);
 
                 alert.updateLastCheckedPrice(newPrice);
                 flightAlertRepository.save(alert);
