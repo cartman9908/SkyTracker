@@ -38,39 +38,33 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
         if (tokenBlackListService.isBlackList(token)) {
             log.info("Blacklisted token: {}", token);
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Blacklisted token: ");
             filterChain.doFilter(request, response);
             return;
         }
 
-        try {
+        String username = jwtUtils.extractUserEmail(token);
 
-            String username = jwtUtils.extractUserEmail(token);
-
-            if (username == null) {
-                log.info("Invalid token, Incorrect username : {}", username);
-                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "invalid token");
-                filterChain.doFilter(request, response);
-                return;
-            }
-
-            if (SecurityContextHolder.getContext().getAuthentication() != null) {
-                log.info("SecurityContext already has auth, skip");
-                filterChain.doFilter(request, response);
-                return;
-            }
-
-            CustomUserDetails userDetails = (CustomUserDetails) userDetailsService.loadUserByUsername(username);
-
-            if (jwtUtils.isValidToken(token, userDetails.getEmail())) {
-                log.info("Successfully validate token");
-                setAuthentication(userDetails, request);
-            }
-
-        } catch (Exception e) {
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token expired");
+        if (username == null) {
+            log.info("Invalid token, Incorrect username : {}", username);
+            filterChain.doFilter(request, response);
             return;
         }
+
+        if (SecurityContextHolder.getContext().getAuthentication() != null) {
+            log.info("SecurityContext already has auth, skip");
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        CustomUserDetails userDetails = (CustomUserDetails) userDetailsService.loadUserByUsername(username);
+
+        if (!jwtUtils.isValidToken(token, userDetails.getEmail())) {
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Access token expired");
+            return;
+        }
+
+        log.info("Successfully validate token");
+        setAuthentication(userDetails, request);
 
         filterChain.doFilter(request, response);
     }
