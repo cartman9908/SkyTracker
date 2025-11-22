@@ -18,6 +18,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,8 +37,8 @@ public class FlightAlertService {
     /**
      *  가격 변동 시 알림 메세지 발행 (3시간)
      */
-    @Scheduled(cron = "0 */1 * * * *")
     @Transactional
+    @Scheduled(cron = "0 */1 * * * *")
     public void publishFlightAlerts() {
         List<FlightAlertEventMessageDto> alertEvents = checkPrice();
         try {
@@ -47,6 +48,16 @@ public class FlightAlertService {
 
         }
 
+    }
+
+    /**
+     * 날짜가 지난 항공권 삭제(매일 00시)
+     */
+    @Transactional
+    @Scheduled(cron = "0 0 0 * * *")
+    public void cleanUpFlightAlerts() {
+        String today = String.valueOf(LocalDate.now());
+        flightAlertRepository.deleteByDepartureDateBefore(today);
     }
 
     /**
