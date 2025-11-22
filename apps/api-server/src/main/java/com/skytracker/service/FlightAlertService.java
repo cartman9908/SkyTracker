@@ -37,7 +37,7 @@ public class FlightAlertService {
     /**
      *  가격 변동 시 알림 메세지 발행 (3시간)
      */
-    @Scheduled(cron = "0 */10 * * * *")
+    @Scheduled(cron = "0 */1 * * * *")
     @Transactional
     public void publishFlightAlerts() {
         List<FlightAlertEventMessageDto> alertEvents = checkPrice();
@@ -69,7 +69,6 @@ public class FlightAlertService {
                 return;
             }
 
-            // 가격 변동 시 알림 메세지 DTO 생성
             if (newPrice < lastCheckedPrice) {
 
                 log.info("id: {}, before: {}, after: {}", alert.getId(), lastCheckedPrice, newPrice);
