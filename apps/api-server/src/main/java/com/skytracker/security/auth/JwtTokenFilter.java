@@ -1,6 +1,7 @@
 package com.skytracker.security.auth;
 
 import com.skytracker.service.TokenBlackListService;
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -38,33 +39,45 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
         if (tokenBlackListService.isBlackList(token)) {
             log.info("Blacklisted token: {}", token);
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Blacklisted token: ");
             filterChain.doFilter(request, response);
             return;
         }
 
-        String username = jwtUtils.extractUserEmail(token);
+        try{
+            String username = jwtUtils.extractUserEmail(token);
 
-        if (username == null) {
-            log.info("Invalid token, Incorrect username : {}", username);
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            filterChain.doFilter(request, response);
-            return;
-        }
+            if (username == null) {
+                log.info("Invalid token, Incorrect username : {}", username);
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED,"invalid token");
+                filterChain.doFilter(request, response);
+                return;
+            }
 
-        if (SecurityContextHolder.getContext().getAuthentication() != null) {
-            log.info("SecurityContext already has auth, skip");
-            filterChain.doFilter(request, response);
-            return;
-        }
+            if (SecurityContextHolder.getContext().getAuthentication() != null) {
+                log.info("SecurityContext already has auth, skip");
+                filterChain.doFilter(request, response);
+                return;
+            }
 
-        CustomUserDetails userDetails = (CustomUserDetails) userDetailsService.loadUserByUsername(username);
+            CustomUserDetails userDetails = (CustomUserDetails) userDetailsService.loadUserByUsername(username);
 
-        if (jwtUtils.isValidToken(token, userDetails.getEmail())){
+            if (!jwtUtils.isValidToken(token, userDetails.getEmail())){
+                log.info("Invalid token, Invalid user: {}", username);
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid token");
+                return;
+            }
+
             log.info("Successfully validate token");
             setAuthentication(userDetails, request);
+
+            filterChain.doFilter(request, response);
+
+        } catch (Exception e) {
+            log.info("JWT validation error: {}", e.getMessage());
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid or expired token");
         }
 
-        filterChain.doFilter(request, response);
     }
 
     private String resolveToken(HttpServletRequest request) {
