@@ -37,7 +37,7 @@ public class FlightAlertService {
     /**
      *  가격 변동 시 알림 메세지 발행 (3시간)
      */
-    @Scheduled(cron = "0 0 */1 * * *")
+    @Scheduled(cron = "0 */10 * * * *")
     @Transactional
     public void publishFlightAlerts() {
         List<FlightAlertEventMessageDto> alertEvents = checkPrice();
@@ -58,31 +58,20 @@ public class FlightAlertService {
 
         List<FlightAlertEventMessageDto> eventList = new ArrayList<>();
 
-        log.info("eventList: {}", eventList);
-
         flightAlertRepository.findAll().forEach(alert -> {
             FlightAlertRequestDto requestDto = FlightAlertMapper.from(alert);
             Integer lastCheckedPrice = requestDto.getLastCheckedPrice();
 
-            log.info("lastCheckedPrice: {}", lastCheckedPrice);
-
             int newPrice = amadeusFlightSearchService.compareFlightsPrice(accessToken, requestDto);
 
-            if (lastCheckedPrice == null) {
-                alert.updateLastCheckedPrice(newPrice);
-                alert.updateNewPrice(null);
-                flightAlertRepository.save(alert);
-                return;
-            }
-
-            log.info("newPrice: {}", newPrice);
-
             alert.updateLastCheckedPrice(newPrice);
-            alert.updateNewPrice(newPrice);
             flightAlertRepository.save(alert);
 
             // 가격 변동 시 알림 메세지 DTO 생성
             if (newPrice < lastCheckedPrice) {
+
+                log.info("id: {}, before: {}, after: {}", alert.getId(), lastCheckedPrice, newPrice);
+
                 List<UserFlightAlert> subscribers = userFlightAlertRepository.findAllByFlightAlert(alert);
 
                 if (subscribers.isEmpty()) {
