@@ -20,10 +20,12 @@ public class FlightAlertRequestDto {
     private String arrivalAirport;         // 도착 공항 코드 (예: LHR)
     private String departureDate;          // 출발 날짜 (예: 2025-07-25)
     private String arrivalDate;            // 도착 날짜
+    private boolean nonStop;               // 직항/경유 여부
+    private boolean roundTrip;             // 왕복/편도 여부
     private String travelClass;            // 좌석 등급 (예: ECONOMY)
     private String currency;               // 통화 코드 (예: KRW)
     private int adults;                    // 성인 인원 수
-    private Integer lastCheckedPrice;          // 마지막으로 확인된 가격
+    private Integer lastCheckedPrice;      // 마지막으로 확인된 가격
     private Integer newPrice;              // 최신 가격 (갱신 후 저장)
 
 
@@ -35,7 +37,9 @@ public class FlightAlertRequestDto {
                 arrivalDate != null ? arrivalDate : "",
                 travelClass,
                 airlineCode,
-                flightNumber
+                flightNumber,
+                String.valueOf(roundTrip),
+                String.valueOf(nonStop)
         );
     }
 
@@ -51,7 +55,8 @@ public class FlightAlertRequestDto {
                 .currencyCode(this.currency)
                 .travelClass(TravelClass.valueOf(this.travelClass))
                 .adults(this.adults)
-                .nonStop(true)
+                .nonStop(this.nonStop)
+                .roundTrip(this.roundTrip)
                 .max(1)
                 .build();
     }

@@ -21,6 +21,9 @@ public class FlightAlertResponseDto {
     private String travelClass;
     private String currency;
     private Integer targetPrice;
-    private Integer lastCheckedPrice;
-    private boolean isActive;
+    private Integer lastCheckedPrice;      //
+    private boolean isActive;              // 토클 On/Off
+    private boolean nonStop;               // 직항/경유 여부
+    private boolean roundTrip;             // 왕복/편도 여부
+
 }

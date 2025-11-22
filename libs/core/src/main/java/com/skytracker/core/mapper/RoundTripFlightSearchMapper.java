@@ -26,7 +26,11 @@ public class RoundTripFlightSearchMapper {
             String currency,
             int price,
             SearchContext searchContext,
-            TripType tripType
+            TripType tripType,
+            boolean outboundNonStop,
+            int outboundStops,
+            boolean returnNonStop,
+            int returnStops
     ) {
         return RoundTripFlightSearchResponseDto.builder()
                 .airlineCode(carrierCode)
@@ -48,6 +52,10 @@ public class RoundTripFlightSearchMapper {
                 .currency(currency)
                 .price(price)
                 .tripType(tripType)
+                .outboundNonStop(outboundNonStop)
+                .outboundStops(outboundStops)
+                .returnNonStop(returnNonStop)
+                .returnStops(returnStops)
                 .build();
     }
 }

@@ -1,6 +1,5 @@
 package com.skytracker.dto.openai;
 
-import com.skytracker.common.dto.enums.MessageRole;
 import com.skytracker.entity.ChatMessage;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,9 +15,9 @@ import java.time.LocalDateTime;
 public class ChatResponseDto {
 
     private Long messageId;
-    private String role;
-    private String content;
-    private LocalDateTime createdAt;
+    private String role;                 // Ai, User
+    private String content;              // 내용
+    private LocalDateTime createdAt;     // 시간
 
     public static ChatResponseDto from(ChatMessage message) {
         return ChatResponseDto.builder()

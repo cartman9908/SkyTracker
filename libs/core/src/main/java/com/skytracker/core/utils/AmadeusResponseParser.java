@@ -76,6 +76,7 @@ public class AmadeusResponseParser {
     // --- 책임2: JsonNode → DTO 변환 메인 로직 (편도) ---
     private FlightSearchResponseDto toDto(JsonNode offer, Map<String,String> carrierMap, SearchContext context) {
         JsonNode segment     = offer.at("/itineraries/0/segments/0");
+        JsonNode segments    = offer.at("/itineraries/0/segments");  // 모든 segment 개수
         JsonNode fareDetails = offer.at("/travelerPricings/0/fareDetailsBySegment/0");
         JsonNode priceNode   = offer.path("price");
 
@@ -95,46 +96,65 @@ public class AmadeusResponseParser {
         String currency      = parseCurrency(priceNode);
         int price            = parsePriceValue(priceNode);
 
+        // 직항/경유 계산 (segments 배열 길이 기반)
+        int segmentCount  = (segments.isArray()) ? segments.size() : 1;
+        int numberOfStops = Math.max(0, segmentCount - 1);  // 1개면 0, 2개면 1회 경유...
+        boolean nonStop   = (numberOfStops == 0);
+
         return FlightSearchResponseMapper.toDto(
                 carrierCode, airlineName, flightNumber, departureTime,
                 arrivalTime, duration, seats, hasCheckedBags,
-                isRefundable, isChangeable, currency, price, context, TripType.ONE_WAY
+                isRefundable, isChangeable, currency, price, context, TripType.ONE_WAY,
+                nonStop, numberOfStops
         );
     }
 
     // --- 책임2: JsonNode → DTO 변환 메인 로직 (왕복) ---
     private RoundTripFlightSearchResponseDto toRoundTripDto(JsonNode offer, Map<String, String> carrierMap, SearchContext context) {
-        JsonNode outboundSegment = offer.at("/itineraries/0/segments/0");
-        JsonNode returnSegment = offer.at("/itineraries/1/segments/0");
-        JsonNode fareDetails = offer.at("/travelerPricings/0/fareDetailsBySegment/0");
-        JsonNode priceNode = offer.path("price");
+        JsonNode outboundSegment  = offer.at("/itineraries/0/segments/0");
+        JsonNode outboundSegments = offer.at("/itineraries/0/segments");  // 출국 전체 segment
+        JsonNode returnSegment    = offer.at("/itineraries/1/segments/0");
+        JsonNode returnSegments   = offer.at("/itineraries/1/segments");  // 귀국 전체 segment
+        JsonNode fareDetails      = offer.at("/travelerPricings/0/fareDetailsBySegment/0");
+        JsonNode priceNode        = offer.path("price");
 
         String carrierCode = outboundSegment.path("carrierCode").asText();
         String airlineName = carrierMap.getOrDefault(carrierCode, "UNKNOWN");
         String flightNumber = outboundSegment.path("number").asText();
 
         String outboundDepartureTime = outboundSegment.path("departure").path("at").asText();
-        String outboundArrivalTime = outboundSegment.path("arrival").path("at").asText();
-        String outboundDuration = offer.at("/itineraries/0/duration").asText();
+        String outboundArrivalTime   = outboundSegment.path("arrival").path("at").asText();
+        String outboundDuration      = offer.at("/itineraries/0/duration").asText();
 
-        String returnDepartureTime = returnSegment.path("departure").path("at").asText();
-        String returnArrivalTime = returnSegment.path("arrival").path("at").asText();
-        String returnDuration = offer.at("/itineraries/1/duration").asText();
+        String returnDepartureTime   = returnSegment.path("departure").path("at").asText();
+        String returnArrivalTime     = returnSegment.path("arrival").path("at").asText();
+        String returnDuration        = offer.at("/itineraries/1/duration").asText();
 
         int seats = offer.path("numberOfBookableSeats").asInt(0);
         boolean hasCheckedBags = parseCheckedBags(fareDetails);
-        boolean isRefundable = parseFlag(fareDetails, "REFUNDABLE");
-        boolean isChangeable = parseFlag(fareDetails, "CHANGEABLE");
+        boolean isRefundable   = parseFlag(fareDetails, "REFUNDABLE");
+        boolean isChangeable   = parseFlag(fareDetails, "CHANGEABLE");
 
         String currency = parseCurrency(priceNode);
-        int price = parsePriceValue(priceNode);
+        int price       = parsePriceValue(priceNode);
+
+        // 출국 직항/경유 계산
+        int outboundSegCount = (outboundSegments.isArray()) ? outboundSegments.size() : 1;
+        int outboundStops    = Math.max(0, outboundSegCount - 1);
+        boolean outboundNonStop = (outboundStops == 0);
+
+        // 귀국 직항/경유 계산
+        int returnSegCount = (returnSegments.isArray()) ? returnSegments.size() : 1;
+        int returnStops    = Math.max(0, returnSegCount - 1);
+        boolean returnNonStop = (returnStops == 0);
 
         return RoundTripFlightSearchMapper.toDto(
                 carrierCode, airlineName, flightNumber,
                 outboundDepartureTime, outboundArrivalTime,
                 outboundDuration, returnDepartureTime, returnArrivalTime,
                 returnDuration, seats, hasCheckedBags, isRefundable,
-                isChangeable, currency, price, context, TripType.ROUND_TRIP
+                isChangeable, currency, price, context, TripType.ROUND_TRIP,
+                outboundNonStop, outboundStops, returnNonStop, returnStops
         );
     }
 

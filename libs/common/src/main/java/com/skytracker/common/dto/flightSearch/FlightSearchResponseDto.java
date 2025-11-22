@@ -34,4 +34,7 @@ public class FlightSearchResponseDto {
     private String currency;                // 통화 단위 (예: KRW)
     private int price;                      // 총 가격 (예: 1118800)
     private TripType tripType;              // 편도, 왕복 구분(예: ONE_WAY)
+
+    private boolean nonStop;                // true면 직항, false면 경유
+    private int numberOfStops;              // 0 = 직항, 1 = 1회 경유
 }

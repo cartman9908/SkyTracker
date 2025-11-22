@@ -23,7 +23,9 @@ public class FlightSearchResponseMapper {
             String currency,
             int price,
             SearchContext context,
-            TripType tripType
+            TripType tripType,
+            boolean nonStop,
+            int numberOfStops
     ) {
         return FlightSearchResponseDto.builder()
                 .airlineCode(carrierCode)
@@ -42,6 +44,8 @@ public class FlightSearchResponseMapper {
                 .arrivalAirport(context.destinationLocationAirPort())
                 .travelClass(context.travelClass())
                 .tripType(tripType)
+                .nonStop(nonStop)
+                .numberOfStops(numberOfStops)
                 .build();
     }
 

@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class FlightAlertEventMessageDto {
+
     private Long userId;
     private String email;
     private String departureAirport;
@@ -17,4 +18,6 @@ public class FlightAlertEventMessageDto {
     private String departureDate;
     private String arrivalDate;
     private Integer lastCheckedPrice;
+    private Integer newPrice;
+
 }

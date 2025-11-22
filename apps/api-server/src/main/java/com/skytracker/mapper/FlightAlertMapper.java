@@ -18,6 +18,8 @@ public class FlightAlertMapper {
                 .travelClass(dto.getTravelClass())
                 .currency(dto.getCurrency())
                 .adults(dto.getAdults())
+                .roundTrip(dto.isRoundTrip())
+                .nonStop(dto.isNonStop())
                 .uniqueKey(uniqueKey)
                 .lastCheckedPrice(dto.getLastCheckedPrice())
                 .build();
@@ -37,6 +39,8 @@ public class FlightAlertMapper {
                 .travelClass(flightAlert.getTravelClass())
                 .currency(flightAlert.getCurrency())
                 .adults(flightAlert.getAdults())
+                .roundTrip(flightAlert.isRoundTrip())
+                .nonStop(flightAlert.isNonStop())
                 .lastCheckedPrice(flightAlert.getLastCheckedPrice())
                 .newPrice(flightAlert.getNewPrice())
                 .build();

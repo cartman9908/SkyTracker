@@ -57,8 +57,9 @@ public class AmadeusFlightSearchService {
                     tookMs
             );
 
-            return parser.parseFlightSearchResponse(response.getBody(), ctx);
-        }catch (HttpServerErrorException e) {
+            return offers;
+
+        } catch (HttpServerErrorException e) {
             log.error("Amadeus 서버 내부 오류: {}", e.getResponseBodyAsString());
             throw new FlightSearchException("Amadeus 서버 오류: " + e.getStatusCode(), e);
         } catch (Exception e) {
@@ -86,12 +87,12 @@ public class AmadeusFlightSearchService {
         outbound.put("departureDateTimeRange", outboundTime);
         originDestList.add(outbound);
 
-        //왕복
+        // 왕복인 경우 귀국 구간 추가 (방향 반대로)
         if (req.getReturnDate() != null && !req.getReturnDate().isBlank()) {
             Map<String, Object> inbound = new HashMap<>();
             inbound.put("id", "2");
-            inbound.put("originLocationCode", req.getOriginLocationAirport());
-            inbound.put("destinationLocationCode", req.getDestinationLocationAirport());
+            inbound.put("originLocationCode", req.getDestinationLocationAirport());   // 반대 방향
+            inbound.put("destinationLocationCode", req.getOriginLocationAirport());
             Map<String, String> inboundTime = Map.of("date", req.getReturnDate());
             inbound.put("departureDateTimeRange", inboundTime);
             originDestList.add(inbound);
@@ -111,6 +112,16 @@ public class AmadeusFlightSearchService {
         // 검색 조건
         Map<String, Object> searchCriteria = new HashMap<>();
         searchCriteria.put("maxFlightOffers", req.getMax());
+
+        // 직항만 조회하고 싶을 때 Amadeus 필터 세팅
+        if (req.isNonStop()) {
+            Map<String, Object> flightFilters = new HashMap<>();
+            Map<String, Object> connectionRestriction = new HashMap<>();
+            connectionRestriction.put("maxNumberOfConnections", 0);
+            flightFilters.put("connectionRestriction", connectionRestriction);
+            searchCriteria.put("flightFilters", flightFilters);
+        }
+
         body.put("searchCriteria", searchCriteria);
 
         return body;
