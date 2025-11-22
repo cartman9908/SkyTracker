@@ -18,10 +18,13 @@ public class UserFlightAlertMapper {
                 .departureDate(alert.getDepartureDate())
                 .travelClass(alert.getTravelClass())
                 .airlineCode(alert.getAirlineCode())
+                .targetPrice(alert.getTargetPrice())
                 .lastCheckedPrice(alert.getLastCheckedPrice())
                 .returnDate(alert.getArrivalDate())
                 .currency(alert.getCurrency())
                 .isActive(userFlightAlert.isActive())
+                .nonStop(alert.isNonStop())
+                .roundTrip(alert.isRoundTrip())
                 .build();
     }
 

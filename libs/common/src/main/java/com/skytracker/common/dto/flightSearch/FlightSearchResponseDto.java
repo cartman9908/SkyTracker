@@ -37,4 +37,5 @@ public class FlightSearchResponseDto {
 
     private boolean nonStop;                // true면 직항, false면 경유
     private int numberOfStops;              // 0 = 직항, 1 = 1회 경유
+
 }
