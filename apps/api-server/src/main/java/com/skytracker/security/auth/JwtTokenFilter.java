@@ -1,7 +1,6 @@
 package com.skytracker.security.auth;
 
 import com.skytracker.service.TokenBlackListService;
-import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -44,12 +43,13 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             return;
         }
 
-        try{
+        try {
+
             String username = jwtUtils.extractUserEmail(token);
 
             if (username == null) {
                 log.info("Invalid token, Incorrect username : {}", username);
-                response.sendError(HttpServletResponse.SC_UNAUTHORIZED,"invalid token");
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "invalid token");
                 filterChain.doFilter(request, response);
                 return;
             }
@@ -62,22 +62,17 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
             CustomUserDetails userDetails = (CustomUserDetails) userDetailsService.loadUserByUsername(username);
 
-            if (!jwtUtils.isValidToken(token, userDetails.getEmail())){
-                log.info("Invalid token, Invalid user: {}", username);
-                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid token");
-                return;
+            if (jwtUtils.isValidToken(token, userDetails.getEmail())) {
+                log.info("Successfully validate token");
+                setAuthentication(userDetails, request);
             }
 
-            log.info("Successfully validate token");
-            setAuthentication(userDetails, request);
-
-            filterChain.doFilter(request, response);
-
         } catch (Exception e) {
-            log.info("JWT validation error: {}", e.getMessage());
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid or expired token");
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token expired");
+            return;
         }
 
+        filterChain.doFilter(request, response);
     }
 
     private String resolveToken(HttpServletRequest request) {
