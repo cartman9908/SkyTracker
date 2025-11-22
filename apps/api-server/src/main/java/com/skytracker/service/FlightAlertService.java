@@ -59,18 +59,23 @@ public class FlightAlertService {
         List<FlightAlertEventMessageDto> eventList = new ArrayList<>();
 
         flightAlertRepository.findAll().forEach(alert -> {
-            FlightAlertRequestDto requestDto = FlightAlertMapper.from(alert);
-            Integer lastCheckedPrice = requestDto.getLastCheckedPrice();
+            Integer lastCheckedPrice = alert.getLastCheckedPrice();
 
-            int newPrice = amadeusFlightSearchService.compareFlightsPrice(accessToken, requestDto);
+            int newPrice = amadeusFlightSearchService.compareFlightsPrice(accessToken, FlightAlertMapper.from(alert));
 
-            alert.updateLastCheckedPrice(newPrice);
-            flightAlertRepository.save(alert);
+            if (lastCheckedPrice == null) {
+                alert.updateLastCheckedPrice(newPrice);
+                flightAlertRepository.save(alert);
+                return;
+            }
 
             // 가격 변동 시 알림 메세지 DTO 생성
             if (newPrice < lastCheckedPrice) {
 
                 log.info("id: {}, before: {}, after: {}", alert.getId(), lastCheckedPrice, newPrice);
+
+                alert.updateLastCheckedPrice(newPrice);
+                flightAlertRepository.save(alert);
 
                 List<UserFlightAlert> subscribers = userFlightAlertRepository.findAllByFlightAlert(alert);
 
@@ -84,6 +89,7 @@ public class FlightAlertService {
                         .forEach(eventList::add);
             }
         });
+
         return eventList;
     }
 }
