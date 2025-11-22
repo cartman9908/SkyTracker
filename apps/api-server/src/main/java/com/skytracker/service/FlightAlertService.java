@@ -1,7 +1,6 @@
 package com.skytracker.service;
 
 import com.skytracker.common.dto.alerts.FlightAlertEventMessageDto;
-import com.skytracker.common.dto.alerts.FlightAlertRequestDto;
 import com.skytracker.common.exception.alert.EmptyAlertSubscribersException;
 import com.skytracker.common.exception.kafka.FlightAlertPublishFailedException;
 import com.skytracker.core.constants.RedisKeys;
@@ -91,7 +90,6 @@ public class FlightAlertService {
                         .forEach(eventList::add);
             }
         });
-
         return eventList;
     }
 }

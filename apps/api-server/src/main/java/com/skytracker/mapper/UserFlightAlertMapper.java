@@ -34,7 +34,6 @@ public class UserFlightAlertMapper {
                 .departureDate(userFlightAlert.getFlightAlert().getDepartureDate())
                 .arrivalDate(userFlightAlert.getFlightAlert().getArrivalDate())
                 .lastCheckedPrice(userFlightAlert.getFlightAlert().getLastCheckedPrice())
-                .newPrice(userFlightAlert.getFlightAlert().getNewPrice())
                 .build();
     }
 }

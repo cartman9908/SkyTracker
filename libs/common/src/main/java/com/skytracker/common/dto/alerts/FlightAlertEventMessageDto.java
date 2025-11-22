@@ -17,5 +17,4 @@ public class FlightAlertEventMessageDto {
     private String departureDate;
     private String arrivalDate;
     private Integer lastCheckedPrice;
-    private Integer newPrice;
 }
