@@ -14,4 +14,5 @@ public class ParsedRouteDto {
     private String departureDate;
     private String arrivalDate;
     private int adults;
+
 }

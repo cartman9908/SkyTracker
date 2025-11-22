@@ -19,7 +19,7 @@ public class FlightAlertRequestDto {
     private String originLocationAirport;        // 출발 공항 코드 (예: ICN)
     private String destinationLocationAirport;   // 도착 공항 코드 (예: LHR)
     private String departureDate;                // 출발 날짜 (예: 2025-07-25)
-    private String returnDate;                  // 도착 날짜
+    private String returnDate;                   // 도착 날짜
     private boolean nonStop;                     // 직항/경유 여부
     private boolean roundTrip;                   // 왕복/편도 여부
     private String travelClass;                  // 좌석 등급 (예: ECONOMY)

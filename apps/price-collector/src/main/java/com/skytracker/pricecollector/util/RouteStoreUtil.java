@@ -3,7 +3,6 @@ package com.skytracker.pricecollector.util;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.skytracker.common.dto.flightSearch.FlightSearchResponseDto;
-import com.skytracker.common.dto.flightSearch.RoundTripFlightSearchResponseDto;
 import com.skytracker.common.exception.integrations.RouteKeyNotFoundException;
 import com.skytracker.core.constants.RedisKeys;
 import com.skytracker.core.service.RedisService;
@@ -25,18 +24,24 @@ public class RouteStoreUtil {
 
     public void routeStore(List<Object> dtoList) throws JsonProcessingException {
 
-        Map<Object,Object> rankingMap = redisService.getHash(RedisKeys.HOT_ROUTES);
+        Map<Object, Object> rankingMap = redisService.getHash(RedisKeys.HOT_ROUTES);
 
-        for (Object dto : dtoList) {
-            if (dto instanceof FlightSearchResponseDto responseDto) {
-                String json = objectMapper.writeValueAsString(responseDto);
-                SortedRouteDto sorted = SortedRouteDto.from(responseDto);
-                pushToRouteList(rankingMap, json, sorted);
-            } else if (dto instanceof RoundTripFlightSearchResponseDto responseDto) {
-                String json = objectMapper.writeValueAsString(responseDto);
-                SortedRouteDto sorted = SortedRouteDto.from(responseDto);
-                pushToRouteList(rankingMap, json, sorted);
+        for (Object value : dtoList) {
+
+            FlightSearchResponseDto responseDto;
+
+            if (value instanceof FlightSearchResponseDto dto) {
+                responseDto = dto;
+            } else if (value instanceof String jsonString) {
+                responseDto = objectMapper.readValue(jsonString, FlightSearchResponseDto.class);
+            } else {
+                responseDto = objectMapper.convertValue(value, FlightSearchResponseDto.class);
             }
+
+            String json = objectMapper.writeValueAsString(responseDto);
+            SortedRouteDto sorted = SortedRouteDto.from(responseDto);
+
+            pushToRouteList(rankingMap, json, sorted);
         }
     }
 

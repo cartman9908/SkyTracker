@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.skytracker.common.dto.SearchContext;
 import com.skytracker.common.dto.alerts.FlightAlertRequestDto;
 import com.skytracker.common.dto.flightSearch.FlightSearchRequestDto;
+import com.skytracker.common.dto.flightSearch.FlightSearchResponseDto;
 import com.skytracker.common.exception.integrations.FlightSearchException;
 import com.skytracker.core.utils.AmadeusResponseParser;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +29,7 @@ public class AmadeusFlightSearchService {
     /**
      * redis 에서 조회한 accessToken 과 req 통해 Amadeus API 에 Response 요청
      */
-    public List<?> searchFlights(String accessToken, FlightSearchRequestDto req) {
+    public List<FlightSearchResponseDto> searchFlights(String accessToken, FlightSearchRequestDto req) {
         long start = System.nanoTime();
         try {
             Map<String, Object> requestBody = buildFlightSearchRequestBody(req);
@@ -45,7 +46,7 @@ public class AmadeusFlightSearchService {
                     req.getTravelClass()
             );
 
-            List<?> offers = parser.parseFlightSearchResponse(response.getBody(), ctx);
+            List<FlightSearchResponseDto> offers = parser.parseFlightSearchResponse(response.getBody(), ctx);
 
             long tookMs = (System.nanoTime() - start) / 1_000_000;
             log.info("✈️ FlightSearch: {}→{} / {} / 성인 {}명 → {}건 ({} ms)",
@@ -149,6 +150,7 @@ public class AmadeusFlightSearchService {
         );
     }
 
+    // 오류 수정해야함
      public int compareFlightsPrice(String accessToken, FlightAlertRequestDto dto) {
          try {
              FlightSearchRequestDto searchReq = dto.toSearchRequest();

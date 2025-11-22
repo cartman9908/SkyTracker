@@ -6,18 +6,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.skytracker.common.dto.SearchContext;
 import com.skytracker.common.dto.enums.TripType;
 import com.skytracker.common.dto.flightSearch.FlightSearchResponseDto;
-import com.skytracker.common.dto.flightSearch.RoundTripFlightSearchResponseDto;
-import com.skytracker.core.mapper.FlightSearchResponseMapper;
-import com.skytracker.core.mapper.RoundTripFlightSearchMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
-
 @Component
 @RequiredArgsConstructor
 public class AmadeusResponseParser {
@@ -25,41 +22,22 @@ public class AmadeusResponseParser {
     private final ObjectMapper objectMapper;
 
     /**
-     * Amadeus 항공권 검색 API 응답을 파싱하여 편도 또는 왕복 DTO 리스트로 변환합니다.
-     *
-     * @param json     Amadeus API의 JSON 응답 문자열
-     * @param context  요청 시 고정된 검색 조건 (출발지, 도착지, 인원 등)
-     * @return         편도 또는 왕복 항공권 DTO 리스트
+     * Amadeus 항공권 검색 API 응답을 파싱하여
+     * 편도/왕복을 단일 FlightSearchResponseDto 리스트로 변환
      */
-    public List<?> parseFlightSearchResponse(String json, SearchContext context) {
+    public List<FlightSearchResponseDto> parseFlightSearchResponse(String json, SearchContext context) {
         try {
             JsonNode root = objectMapper.readTree(json);
             JsonNode data = root.get("data");
             Map<String, String> carrierMap = extractCarrierMap(root);
 
-            if (data.isArray() && !data.isEmpty()) {
-                JsonNode firstOffer = data.get(0);
-                JsonNode itineraries = firstOffer.get("itineraries");
-
-                if (itineraries != null && itineraries.isArray()) {
-                    if (itineraries.size() == 2) {
-                        // 왕복 항공권인 경우
-                        return StreamSupport.stream(data.spliterator(), false)
-                                .map(offer -> toRoundTripDto(offer, carrierMap, context))
-                                .collect(Collectors.toList());
-                    } else if (itineraries.size() == 1) {
-                        // 편도 항공권인 경우
-                        return StreamSupport.stream(data.spliterator(), false)
-                                .map(offer -> toDto(offer, carrierMap, context))
-                                .collect(Collectors.toList());
-                    } else {
-                        throw new RuntimeException("지원하지 않는 여정 개수입니다: " + itineraries.size());
-                    }
-                } else {
-                    throw new RuntimeException("응답에 'itineraries' 필드가 없거나 잘못된 형식입니다");
-                }
+            if (data == null || !data.isArray() || data.isEmpty()) {
+                throw new RuntimeException("항공권 데이터가 비어있거나 잘못된 형식입니다");
             }
-            throw new RuntimeException("항공권 데이터가 비어있거나 잘못된 형식입니다");
+
+            return StreamSupport.stream(data.spliterator(), false)
+                    .map(offer -> toDto(offer, carrierMap, context))
+                    .collect(Collectors.toList());
 
         } catch (IOException e) {
             throw new RuntimeException("항공권 응답 파싱 중 오류가 발생했습니다", e);
@@ -73,89 +51,92 @@ public class AmadeusResponseParser {
                 new TypeReference<Map<String,String>>() {});
     }
 
-    // --- 책임2: JsonNode → DTO 변환 메인 로직 (편도) ---
-    private FlightSearchResponseDto toDto(JsonNode offer, Map<String,String> carrierMap, SearchContext context) {
-        JsonNode segment     = offer.at("/itineraries/0/segments/0");
-        JsonNode segments    = offer.at("/itineraries/0/segments");  // 모든 segment 개수
-        JsonNode fareDetails = offer.at("/travelerPricings/0/fareDetailsBySegment/0");
+    /**
+     * JsonNode(offer) → 단일 FlightSearchResponseDto 변환
+     * - legs: 편도면 1개, 왕복이면 2개
+     */
+    private FlightSearchResponseDto toDto(JsonNode offer,
+                                          Map<String,String> carrierMap,
+                                          SearchContext context) {
+
+        JsonNode itineraries = offer.path("itineraries");
+        if (!itineraries.isArray() || itineraries.isEmpty()) {
+            throw new RuntimeException("itineraries 가 없거나 잘못된 형식입니다");
+        }
+
+        int legsCount = itineraries.size();
+        TripType tripType = (legsCount == 1) ? TripType.ONE_WAY : TripType.ROUND_TRIP;
+
         JsonNode priceNode   = offer.path("price");
+        JsonNode fareDetails = offer.at("/travelerPricings/0/fareDetailsBySegment/0");
 
-        String carrierCode   = segment.path("carrierCode").asText();
-        String airlineName   = carrierMap.getOrDefault(carrierCode, "UNKNOWN");
-        String flightNumber  = segment.path("number").asText();
+        String currency   = parseCurrency(priceNode);
+        int totalPrice    = parsePriceValue(priceNode);
 
-        String departureTime = segment.path("departure").path("at").asText();
-        String arrivalTime   = segment.path("arrival").path("at").asText();
-        String duration      = offer.at("/itineraries/0/duration").asText();
-
-        int seats            = offer.path("numberOfBookableSeats").asInt(0);
         boolean hasCheckedBags = parseCheckedBags(fareDetails);
         boolean isRefundable   = parseFlag(fareDetails, "REFUNDABLE");
         boolean isChangeable   = parseFlag(fareDetails, "CHANGEABLE");
 
-        String currency      = parseCurrency(priceNode);
-        int price            = parsePriceValue(priceNode);
+        List<FlightSearchResponseDto.LegDto> legs = new ArrayList<>();
 
-        // 직항/경유 계산 (segments 배열 길이 기반)
-        int segmentCount  = (segments.isArray()) ? segments.size() : 1;
-        int numberOfStops = Math.max(0, segmentCount - 1);  // 1개면 0, 2개면 1회 경유...
-        boolean nonStop   = (numberOfStops == 0);
+        for (int i = 0; i < legsCount; i++) {
+            JsonNode itinerary = itineraries.get(i);
+            JsonNode segments  = itinerary.path("segments");
 
-        return FlightSearchResponseMapper.toDto(
-                carrierCode, airlineName, flightNumber, departureTime,
-                arrivalTime, duration, seats, hasCheckedBags,
-                isRefundable, isChangeable, currency, price, context, TripType.ONE_WAY,
-                nonStop, numberOfStops
-        );
-    }
+            if (!segments.isArray() || segments.isEmpty()) {
+                throw new RuntimeException("segments 가 없거나 잘못된 형식입니다 (index: " + i + ")");
+            }
 
-    // --- 책임2: JsonNode → DTO 변환 메인 로직 (왕복) ---
-    private RoundTripFlightSearchResponseDto toRoundTripDto(JsonNode offer, Map<String, String> carrierMap, SearchContext context) {
-        JsonNode outboundSegment  = offer.at("/itineraries/0/segments/0");
-        JsonNode outboundSegments = offer.at("/itineraries/0/segments");  // 출국 전체 segment
-        JsonNode returnSegment    = offer.at("/itineraries/1/segments/0");
-        JsonNode returnSegments   = offer.at("/itineraries/1/segments");  // 귀국 전체 segment
-        JsonNode fareDetails      = offer.at("/travelerPricings/0/fareDetailsBySegment/0");
-        JsonNode priceNode        = offer.path("price");
+            JsonNode firstSeg = segments.get(0);
+            JsonNode lastSeg  = segments.get(segments.size() - 1);
 
-        String carrierCode = outboundSegment.path("carrierCode").asText();
-        String airlineName = carrierMap.getOrDefault(carrierCode, "UNKNOWN");
-        String flightNumber = outboundSegment.path("number").asText();
+            String carrierCode  = firstSeg.path("carrierCode").asText();
+            String airlineName  = carrierMap.getOrDefault(carrierCode, "UNKNOWN");
+            String flightNumber = firstSeg.path("number").asText();
 
-        String outboundDepartureTime = outboundSegment.path("departure").path("at").asText();
-        String outboundArrivalTime   = outboundSegment.path("arrival").path("at").asText();
-        String outboundDuration      = offer.at("/itineraries/0/duration").asText();
+            // Amadeus 응답 예: departure: { "iataCode": "ICN", "at": "..." }
+            String departureAirport = firstSeg.path("departure").path("iataCode")
+                    .asText(context.originLocationAirPort());
+            String arrivalAirport = lastSeg.path("arrival").path("iataCode")
+                    .asText(context.destinationLocationAirPort());
 
-        String returnDepartureTime   = returnSegment.path("departure").path("at").asText();
-        String returnArrivalTime     = returnSegment.path("arrival").path("at").asText();
-        String returnDuration        = offer.at("/itineraries/1/duration").asText();
+            String departureTime = firstSeg.path("departure").path("at").asText();
+            String arrivalTime   = lastSeg.path("arrival").path("at").asText();
+            String duration      = itinerary.path("duration").asText();
 
-        int seats = offer.path("numberOfBookableSeats").asInt(0);
-        boolean hasCheckedBags = parseCheckedBags(fareDetails);
-        boolean isRefundable   = parseFlag(fareDetails, "REFUNDABLE");
-        boolean isChangeable   = parseFlag(fareDetails, "CHANGEABLE");
+            int seats = offer.path("numberOfBookableSeats").asInt(0);
 
-        String currency = parseCurrency(priceNode);
-        int price       = parsePriceValue(priceNode);
+            int segCount      = segments.size();
+            int numberOfStops = Math.max(0, segCount - 1);
+            boolean nonStop   = (numberOfStops == 0);
 
-        // 출국 직항/경유 계산
-        int outboundSegCount = (outboundSegments.isArray()) ? outboundSegments.size() : 1;
-        int outboundStops    = Math.max(0, outboundSegCount - 1);
-        boolean outboundNonStop = (outboundStops == 0);
+            FlightSearchResponseDto.LegDto leg = FlightSearchResponseDto.LegDto.builder()
+                    .airlineCode(carrierCode)
+                    .airlineName(airlineName)
+                    .flightNumber(flightNumber)
+                    .departureAirport(departureAirport)
+                    .departureTime(departureTime)
+                    .arrivalAirport(arrivalAirport)
+                    .arrivalTime(arrivalTime)
+                    .duration(duration)
+                    .travelClass(context.travelClass())
+                    .numberOfBookableSeats(seats)
+                    .nonStop(nonStop)
+                    .numberOfStops(numberOfStops)
+                    .build();
 
-        // 귀국 직항/경유 계산
-        int returnSegCount = (returnSegments.isArray()) ? returnSegments.size() : 1;
-        int returnStops    = Math.max(0, returnSegCount - 1);
-        boolean returnNonStop = (returnStops == 0);
+            legs.add(leg);
+        }
 
-        return RoundTripFlightSearchMapper.toDto(
-                carrierCode, airlineName, flightNumber,
-                outboundDepartureTime, outboundArrivalTime,
-                outboundDuration, returnDepartureTime, returnArrivalTime,
-                returnDuration, seats, hasCheckedBags, isRefundable,
-                isChangeable, currency, price, context, TripType.ROUND_TRIP,
-                outboundNonStop, outboundStops, returnNonStop, returnStops
-        );
+        return FlightSearchResponseDto.builder()
+                .tripType(tripType)
+                .currency(currency)
+                .totalPrice(totalPrice)
+                .hasCheckedBags(hasCheckedBags)
+                .isRefundable(isRefundable)
+                .isChangeable(isChangeable)
+                .legs(legs)
+                .build();
     }
 
     // --- 책임3: amenities 파싱 및 flag 추출 ---

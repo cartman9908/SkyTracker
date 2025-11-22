@@ -1,7 +1,6 @@
 package com.skytracker.pricecollector.dto;
 
 import com.skytracker.common.dto.flightSearch.FlightSearchResponseDto;
-import com.skytracker.common.dto.flightSearch.RoundTripFlightSearchResponseDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,24 +14,21 @@ public class SortedRouteDto {
 
     private String departureAirportCode;
     private String arrivalAirportCode;
-    private String departureTime;
-    private String arrivalTime;
+    private String departureTime; // yyyy-MM-dd
+    private String arrivalTime;   // 왕복이면 yyyy-MM-dd, 편도면 null
 
     public static SortedRouteDto from(FlightSearchResponseDto dto) {
-        return SortedRouteDto.builder()
-                .departureAirportCode(dto.getDepartureAirport())
-                .arrivalAirportCode(dto.getArrivalAirport())
-                .departureTime(dto.getDepartureTime().substring(0, 10))
-                .arrivalTime(null)
-                .build();
-    }
 
-    public static SortedRouteDto from(RoundTripFlightSearchResponseDto dto) {
+        FlightSearchResponseDto.LegDto outbound = dto.getLegs().get(0);
+
+        FlightSearchResponseDto.LegDto inbound =
+                dto.getLegs().size() > 1 ? dto.getLegs().get(1) : null;
+
         return SortedRouteDto.builder()
-                .departureAirportCode(dto.getDepartureAirport())
-                .arrivalAirportCode(dto.getArrivalAirport())
-                .departureTime(dto.getOutboundDepartureTime().substring(0,10))
-                .arrivalTime(dto.getReturnDepartureTime().substring(0, 10))
+                .departureAirportCode(outbound.getDepartureAirport())
+                .arrivalAirportCode(outbound.getArrivalAirport())
+                .departureTime(outbound.getDepartureTime().substring(0, 10))
+                .arrivalTime(inbound != null ? inbound.getDepartureTime().substring(0, 10) : null)
                 .build();
     }
 }

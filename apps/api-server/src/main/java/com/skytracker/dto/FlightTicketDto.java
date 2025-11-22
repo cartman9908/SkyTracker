@@ -1,7 +1,7 @@
 package com.skytracker.dto;
 
+import com.skytracker.common.dto.enums.TripType;
 import com.skytracker.common.dto.flightSearch.FlightSearchResponseDto;
-import com.skytracker.common.dto.flightSearch.RoundTripFlightSearchResponseDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,33 +15,34 @@ public class FlightTicketDto {
 
     private String departureAirport;
     private String arrivalAirport;
-    private String outBoundDepartureTime;
-    private String outBoundArrivalTime;
-    private String returnDepartureTime;
-    private String returnArrivalTime;
+
+    private String outboundDepartureTime;
+    private String outboundArrivalTime;
+
+    private String returnDepartureTime;  // 왕복일 때만 존재
+    private String returnArrivalTime;    // 왕복일 때만 존재
+
     private int price;
 
     public static FlightTicketDto from(FlightSearchResponseDto dto) {
-        return FlightTicketDto.builder()
-                .departureAirport(dto.getDepartureAirport())
-                .arrivalAirport(dto.getArrivalAirport())
-                .outBoundDepartureTime(dto.getDepartureTime())
-                .outBoundArrivalTime(dto.getArrivalTime())
-                .returnDepartureTime(null)
-                .returnArrivalTime(null)
-                .price(dto.getPrice())
-                .build();
-    }
 
-    public static FlightTicketDto from(RoundTripFlightSearchResponseDto dto) {
+        // 출국 leg (무조건 존재)
+        FlightSearchResponseDto.LegDto outbound = dto.getLegs().get(0);
+
+        // 왕복일 경우만 return leg 존재
+        FlightSearchResponseDto.LegDto inbound =
+                dto.getTripType() == TripType.ROUND_TRIP && dto.getLegs().size() > 1
+                        ? dto.getLegs().get(1)
+                        : null;
+
         return FlightTicketDto.builder()
-                .departureAirport(dto.getDepartureAirport())
-                .arrivalAirport(dto.getArrivalAirport())
-                .outBoundDepartureTime(dto.getOutboundDepartureTime())
-                .outBoundArrivalTime(dto.getOutboundArrivalTime())
-                .returnDepartureTime(dto.getReturnDepartureTime())
-                .returnArrivalTime(dto.getReturnArrivalTime())
-                .price(dto.getPrice())
+                .departureAirport(outbound.getDepartureAirport())
+                .arrivalAirport(outbound.getArrivalAirport())
+                .outboundDepartureTime(outbound.getDepartureTime())
+                .outboundArrivalTime(outbound.getArrivalTime())
+                .returnDepartureTime(inbound != null ? inbound.getDepartureTime() : null)
+                .returnArrivalTime(inbound != null ? inbound.getArrivalTime() : null)
+                .price(dto.getTotalPrice())
                 .build();
     }
 }

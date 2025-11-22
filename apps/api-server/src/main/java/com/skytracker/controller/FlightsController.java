@@ -3,7 +3,6 @@ package com.skytracker.controller;
 import com.skytracker.common.dto.flightSearch.FlightSearchRequestDto;
 import com.skytracker.core.service.AmadeusFlightSearchService;
 import com.skytracker.dto.HotRouteBestPrice;
-import com.skytracker.elasticsearch.service.RouteAggregationService;
 import com.skytracker.service.AmadeusTokenManger;
 import com.skytracker.service.HotRankingService;
 import com.skytracker.service.SearchLogService;

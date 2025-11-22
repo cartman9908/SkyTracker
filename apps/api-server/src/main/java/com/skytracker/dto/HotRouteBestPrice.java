@@ -7,24 +7,27 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 public class HotRouteBestPrice {
 
     private String departureAirport;
     private String arrivalAirport;
-    private String outBoundDepartureTime;
-    private String outBoundArrivalTime;
+
+    private String outboundDepartureTime;
+    private String outboundArrivalTime;
+
     private String returnDepartureTime;
     private String returnArrivalTime;
+
     private int price;
 
     public static HotRouteBestPrice from(FlightTicketDto dto) {
         return HotRouteBestPrice.builder()
                 .departureAirport(dto.getDepartureAirport())
                 .arrivalAirport(dto.getArrivalAirport())
-                .outBoundDepartureTime(dto.getOutBoundDepartureTime())
-                .outBoundArrivalTime(dto.getOutBoundArrivalTime())
+                .outboundDepartureTime(dto.getOutboundDepartureTime())
+                .outboundArrivalTime(dto.getOutboundArrivalTime())
                 .returnDepartureTime(dto.getReturnDepartureTime())
                 .returnArrivalTime(dto.getReturnArrivalTime())
                 .price(dto.getPrice())
