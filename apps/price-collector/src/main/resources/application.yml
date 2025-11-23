@@ -42,4 +42,4 @@ spring:
       sentinel:
         master: ${SPRING_DATA_REDIS_SENTINEL_MASTER}
         nodes: ${SPRING_DATA_REDIS_SENTINEL_NODES}
-        password: ${SPRING_DATA_REDIS_SENTINEL_PASSWORD}
+        password: ${SPRING_DATA_REDIS_PASSWORD}
