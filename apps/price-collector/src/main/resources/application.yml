@@ -24,7 +24,6 @@ spring:
         heartbeat.interval.ms: 3000
         session.timeout.ms: 10000
 
-        # 커밋 일관성(프로듀서가 트랜잭션/멱등일 때 권장)
         isolation.level: read_committed
 
       max-poll-records: 50
@@ -34,7 +33,7 @@ spring:
       ack-mode: manual_immediate
       concurrency: 3
       poll-timeout: 3s
-      missing-topics-fatal: false   # 배포/부팅 시 토픽 미생성으로 인한 실패 방지
+      missing-topics-fatal: false
 
   data:
     redis:
