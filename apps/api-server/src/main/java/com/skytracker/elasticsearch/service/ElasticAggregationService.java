@@ -81,8 +81,17 @@ public class ElasticAggregationService {
       String[] parts = routeKey.split("\\|", -1);
       String routeCode     = parts.length > 0 ? parts[0] : "";
       String departureDate = parts.length > 1 ? parts[1] : "";
-      String arrivalDate   = parts.length > 2 ? parts[2] : null;
-      int    adults        = parts.length > 2 ? Integer.parseInt(parts[parts.length - 1]) : 0;
+      String arrivalDate   = null;
+      int adults           = 0;
+
+      if (parts.length == 4) {
+         arrivalDate = parts[2];
+         adults      = Integer.parseInt(parts[3]);
+      } else if (parts.length == 3) {
+          adults      = Integer.parseInt(parts[2]);
+      } else {
+         log.info("invalid route key: {}", routeKey);
+      }
 
       String[] airports = routeCode.split(":", -1);
       String departureAirportCode = airports.length > 0 ? airports[0] : "";
