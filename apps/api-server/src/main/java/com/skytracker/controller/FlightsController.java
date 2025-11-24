@@ -30,7 +30,6 @@ public class FlightsController {
     @PostMapping("/search")
     public ResponseEntity<?> searchFlights(@RequestBody @Valid FlightSearchRequestDto dto) {
         try {
-            routeAggregationService.updateHotRoutes();
             searchLogService.publishSearchLog(dto);
             String token = amadeusService.getAmadeusAccessToken();
             List<?> results = flightSearchService.searchFlights(token, dto);

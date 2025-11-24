@@ -19,6 +19,7 @@ public class RouteAggregationService {
     private final ElasticAggregationService esAggregationService;
     private final RedisService redisService;
 
+    @Scheduled(cron = "0 */1 * * * *")
     public void updateHotRoutes() {
         try {
             List<EsAggregationDto> topRoutes = esAggregationService.getTopRoutes(10);
