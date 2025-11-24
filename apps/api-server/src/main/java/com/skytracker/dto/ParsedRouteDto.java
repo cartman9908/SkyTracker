@@ -8,11 +8,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ParsedRouteDto {
-
     private String departureAirportCode;
     private String arrivalAirportCode;
     private String departureDate;
     private String arrivalDate;
     private int adults;
-
 }

@@ -39,7 +39,9 @@ public class FlightTrackingService {
             int totalPublished = 0;
 
             for (RouteAggregationDto route : cachedHotRoutes) {
+                log.info("출발: {}, 도착:{}, 인원:{}", route.getDepartureDate(), route.getArrivalDate(), route.getAdults());
                 FlightSearchRequestDto req = FlightSearchResponseMapper.toFlightSearchRequestDto(route);
+                log.info("출발: {}, 도착:{}, 인원:{}", req.getDepartureDate(), req.getReturnDate(), req.getAdults());
 
                 List<?> responses = amadeusService.searchFlights(accessToken, req);
                 for (Object responseDto : responses) {
