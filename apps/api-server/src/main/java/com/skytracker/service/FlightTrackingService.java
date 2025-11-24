@@ -30,7 +30,7 @@ public class FlightTrackingService {
     /**
      * 가격 수집 및 가격변동 이벤트 발행 (9분)
      */
-    @Scheduled(cron = "0 */1 * * * *")
+    @Scheduled(cron = "0 */9 * * * *")
     public void collectAndPublishPrices() {
         try {
             String accessToken = redisService.getValue(RedisKeys.AMADEUS_TOKEN);
@@ -39,6 +39,7 @@ public class FlightTrackingService {
             int totalPublished = 0;
 
             for (RouteAggregationDto route : cachedHotRoutes) {
+
                 log.info("출발: {}, 도착:{}, 인원:{}", route.getDepartureDate(), route.getArrivalDate(), route.getAdults());
                 FlightSearchRequestDto req = FlightSearchResponseMapper.toFlightSearchRequestDto(route);
                 log.info("출발: {}, 도착:{}, 인원:{}", req.getDepartureDate(), req.getReturnDate(), req.getAdults());
