@@ -10,6 +10,7 @@ import com.skytracker.common.exception.integrations.FlightSearchException;
 import com.skytracker.core.utils.AmadeusResponseParser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpServerErrorException;
@@ -150,7 +151,9 @@ public class AmadeusFlightSearchService {
         );
     }
 
-    // 오류 수정해야함
+    /**
+     *  항공권 가격 비교 서비스 로직
+     **/
      public int compareFlightsPrice(String accessToken, FlightAlertRequestDto dto) {
          try {
              FlightSearchRequestDto searchReq = dto.toSearchRequest();

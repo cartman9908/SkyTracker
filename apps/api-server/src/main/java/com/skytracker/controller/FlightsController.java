@@ -3,8 +3,9 @@ package com.skytracker.controller;
 import com.skytracker.common.dto.flightSearch.FlightSearchRequestDto;
 import com.skytracker.common.dto.flightSearch.FlightSearchResponseDto;
 import com.skytracker.core.service.AmadeusFlightSearchService;
-import com.skytracker.elasticsearch.service.RouteAggregationService;
-import com.skytracker.service.AmadeusTokenManger;
+import com.skytracker.core.service.FlightSearchCache;
+import com.skytracker.dto.HotRouteBestPrice;
+import com.skytracker.service.token.AmadeusTokenManger;
 import com.skytracker.service.HotRankingService;
 import com.skytracker.service.SearchLogService;
 import jakarta.validation.Valid;
@@ -25,15 +26,35 @@ public class FlightsController {
     private final AmadeusTokenManger amadeusService;
     private final HotRankingService rankingService;
     private final SearchLogService searchLogService;
-    private final RouteAggregationService routeAggregationService;
+    private final FlightSearchCache flightSearchCache;
 
     @PostMapping("/search")
     public ResponseEntity<?> searchFlights(@RequestBody @Valid FlightSearchRequestDto dto) {
         try {
             searchLogService.publishSearchLog(dto);
+
             String token = amadeusService.getAmadeusAccessToken();
-            List<?> results = flightSearchService.searchFlights(token, dto);
-            return ResponseEntity.ok().body(results);
+            String uniqueKey = dto.buildUniqueKey();
+
+            List<FlightSearchResponseDto> results;
+
+            // 1. 캐시 조회
+            if (flightSearchCache.hasKey(uniqueKey)) {
+                results = flightSearchCache.cacheSearch(uniqueKey);
+                // 역직렬화 실패 등으로 null 나올 수도 있으니 한 번 더 방어
+                if (results != null) {
+                    log.debug("Cache HIT: {}", uniqueKey);
+                    return ResponseEntity.ok(results);
+                }
+                log.debug("Cache key exists but value is invalid, falling back to API: {}", uniqueKey);
+            }
+
+            // 2. 캐시 미스 or 캐시 값 문제 시 → API 호출
+            results = flightSearchService.searchFlights(token, dto);
+            flightSearchCache.putSearch(uniqueKey, results);
+
+            return ResponseEntity.ok(results);
+
         } catch (Exception e) {
             log.error("Flight search failed", e);
             return ResponseEntity.internalServerError().body("Internal error: " + e.getMessage());
@@ -42,7 +63,7 @@ public class FlightsController {
 
     @GetMapping("/hot-routes")
     public ResponseEntity<?> getHotRouteBestPrice() {
-        List<FlightSearchResponseDto> result = rankingService.getHotRouteBestPrice();
+        List<HotRouteBestPrice> result = rankingService.getHotRouteBestPrice();
         return ResponseEntity.ok().body(result);
     }
 }

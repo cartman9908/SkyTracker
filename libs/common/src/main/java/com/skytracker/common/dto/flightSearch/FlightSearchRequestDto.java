@@ -27,4 +27,20 @@ public class FlightSearchRequestDto {
     private int adults;                      // 성인 인원
     private int max;                         // 최대 응답 개수
 
+    public String buildUniqueKey() {
+        return String.join(":",
+                "flightSearch",
+                originLocationAirport,
+                destinationLocationAirport,
+                departureDate,
+                returnDate != null ? returnDate : "NONE",
+                travelClass != null ? travelClass.name() : "ANY",
+                currencyCode != null ? currencyCode : "DEFAULT",
+                roundTrip ? "ROUND" : "ONEWAY",
+                nonStop ? "DIRECT" : "ANY",
+                "A" + adults, // adults=1 → A1
+                "MAX" + max
+        );
+    }
+
 }

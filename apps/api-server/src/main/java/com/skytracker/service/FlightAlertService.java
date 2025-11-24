@@ -5,7 +5,7 @@ import com.skytracker.common.exception.alert.EmptyAlertSubscribersException;
 import com.skytracker.common.exception.kafka.FlightAlertPublishFailedException;
 import com.skytracker.core.constants.RedisKeys;
 import com.skytracker.core.service.AmadeusFlightSearchService;
-import com.skytracker.core.service.RedisService;
+import com.skytracker.core.service.RedisClient;
 import com.skytracker.entity.UserFlightAlert;
 import com.skytracker.kafka.service.FlightAlertProducer;
 import com.skytracker.mapper.FlightAlertMapper;
@@ -28,7 +28,7 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class FlightAlertService {
 
-    private final RedisService redisService;
+    private final RedisClient redisClient;
     private final FlightAlertRepository flightAlertRepository;
     private final UserFlightAlertRepository userFlightAlertRepository;
     private final AmadeusFlightSearchService amadeusFlightSearchService;
@@ -64,7 +64,7 @@ public class FlightAlertService {
      * 가격 변동 체크
      */
     private List<FlightAlertEventMessageDto> checkPrice() {
-        String accessToken = redisService.getValue(RedisKeys.AMADEUS_TOKEN);
+        String accessToken = redisClient.getValue(RedisKeys.AMADEUS_TOKEN);
 
         List<FlightAlertEventMessageDto> eventList = new ArrayList<>();
 

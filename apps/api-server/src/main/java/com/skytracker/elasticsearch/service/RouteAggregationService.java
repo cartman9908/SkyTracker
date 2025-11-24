@@ -1,7 +1,7 @@
 package com.skytracker.elasticsearch.service;
 
 import com.skytracker.core.constants.RedisKeys;
-import com.skytracker.core.service.RedisService;
+import com.skytracker.core.service.RedisClient;
 import com.skytracker.dto.EsAggregationDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,7 +17,7 @@ import java.util.List;
 public class RouteAggregationService {
 
     private final ElasticAggregationService esAggregationService;
-    private final RedisService redisService;
+    private final RedisClient redisClient;
 
     @Scheduled(cron = "0 0 0 * * *")
     public void updateHotRoutes() {
@@ -25,7 +25,7 @@ public class RouteAggregationService {
             List<EsAggregationDto> topRoutes = esAggregationService.getTopRoutes(10);
             topRoutes.sort(Comparator.comparingLong(EsAggregationDto::getDocCount).reversed());
 
-            redisService.delete(RedisKeys.HOT_ROUTES_TMP);
+            redisClient.delete(RedisKeys.HOT_ROUTES_TMP);
 
             int rank = 1;
             for (EsAggregationDto route : topRoutes) {
@@ -33,11 +33,11 @@ public class RouteAggregationService {
                 String field = RedisKeys.HOT_ROUTES + ":" + rank;
                 String value = buildValue(route);
 
-                redisService.hashPut(redisKey, field, value);
+                redisClient.hashPut(redisKey, field, value);
                 rank++;
             }
 
-            redisService.rename(RedisKeys.HOT_ROUTES_TMP, RedisKeys.HOT_ROUTES);
+            redisClient.rename(RedisKeys.HOT_ROUTES_TMP, RedisKeys.HOT_ROUTES);
 
             log.info("인기 노선 캐싱 성공");
         } catch (Exception e) {

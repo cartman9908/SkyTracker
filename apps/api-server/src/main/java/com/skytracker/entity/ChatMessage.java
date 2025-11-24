@@ -22,7 +22,7 @@ public class ChatMessage extends BaseTimeEntity{
     @JoinColumn(name = "room_id")
     private ChatRoom chatRoom;
 
-    @Column(name = "message")
+    @Column(name = "message", columnDefinition = "TEXT")
     private String message;
 
     @Enumerated(EnumType.STRING)

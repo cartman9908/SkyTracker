@@ -1,6 +1,6 @@
 package com.skytracker.security.auth;
 
-import com.skytracker.service.TokenBlackListService;
+import com.skytracker.service.token.TokenBlackListService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

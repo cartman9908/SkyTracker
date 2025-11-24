@@ -1,6 +1,6 @@
-package com.skytracker.service;
+package com.skytracker.service.token;
 
-import com.skytracker.core.service.RedisService;
+import com.skytracker.core.service.RedisClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -12,13 +12,13 @@ import static com.skytracker.core.constants.RedisKeys.BLACKLIST_PREFIX;
 @RequiredArgsConstructor
 public class TokenBlackListService {
 
-    private final RedisService redisService;
+    private final RedisClient redisClient;
 
     public void addToBlackList(String token, long expirationTime) {
-        redisService.setBlackList(BLACKLIST_PREFIX + token, true, expirationTime, TimeUnit.MILLISECONDS);
+        redisClient.setBlackList(BLACKLIST_PREFIX + token, true, expirationTime, TimeUnit.MILLISECONDS);
     }
 
     public boolean isBlackList(String token) {
-        return redisService.isBlackListed(BLACKLIST_PREFIX + token);
+        return redisClient.isBlackListed(BLACKLIST_PREFIX + token);
     }
 }

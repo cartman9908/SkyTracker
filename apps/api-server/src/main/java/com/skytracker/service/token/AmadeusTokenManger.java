@@ -1,9 +1,9 @@
-package com.skytracker.service;
+package com.skytracker.service.token;
 
 import com.skytracker.common.exception.integrations.AmadeusTokenIssueException;
 import com.skytracker.common.exception.integrations.DistributedLockTimeoutException;
 import com.skytracker.core.constants.RedisKeys;
-import com.skytracker.core.service.RedisService;
+import com.skytracker.core.service.RedisClient;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RLock;
@@ -33,7 +33,7 @@ public class AmadeusTokenManger {
 
     private final RestTemplate restTemplate;
     private final RedissonClient redisson;
-    private final RedisService redisService;
+    private final RedisClient redisClient;
 
     private static final String ACCESS_URL = "https://test.api.amadeus.com/v1/security/oauth2/token";
 
@@ -60,7 +60,7 @@ public class AmadeusTokenManger {
 
             String token = (String) response.getBody().get("access_token");
             log.info("accessToken = {}", token);
-            redisService.setValueWithTTL(RedisKeys.AMADEUS_TOKEN, token, Duration.ofMinutes(30));
+            redisClient.setValueWithTTL(RedisKeys.AMADEUS_TOKEN, token, Duration.ofMinutes(30));
             return token;
 
         } catch (Exception e) {
@@ -73,7 +73,7 @@ public class AmadeusTokenManger {
      *  redisson Lock 으로 여러 서버에서 요청 하더라도 하나의 요청만 수행할 수 있도록 서비스 로직 구현
      */
     public String getAmadeusAccessToken() {
-        String token = redisService.getValue(RedisKeys.AMADEUS_TOKEN);
+        String token = redisClient.getValue(RedisKeys.AMADEUS_TOKEN);
         if (token != null) return token;
 
         RLock lock = redisson.getLock(RedisKeys.AMADEUS_TOKEN_LOCK);
@@ -82,7 +82,7 @@ public class AmadeusTokenManger {
             if (lock.tryLock(5, 3, TimeUnit.SECONDS)) {
                 try {
                     // 다시 redis 확인 (혹시 다른 스레드가 먼저 처리했을 수 있는 경우)
-                    token = redisService.getValue(RedisKeys.AMADEUS_TOKEN);
+                    token = redisClient.getValue(RedisKeys.AMADEUS_TOKEN);
                     if (token != null) return token;
 
                     // 진짜 발급
@@ -96,7 +96,7 @@ public class AmadeusTokenManger {
 
                 for (int i = 0; i < 4; i++) { // 최대 4초까지 polling
                     Thread.sleep(1000);
-                    token = redisService.getValue(RedisKeys.AMADEUS_TOKEN);
+                    token = redisClient.getValue(RedisKeys.AMADEUS_TOKEN);
                     if (token != null) return token;
                 }
 

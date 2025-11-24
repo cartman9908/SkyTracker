@@ -8,7 +8,7 @@ import com.skytracker.common.exception.integrations.RouteAggregationException;
 import com.skytracker.core.constants.RedisKeys;
 import com.skytracker.core.mapper.FlightSearchResponseMapper;
 import com.skytracker.core.service.AmadeusFlightSearchService;
-import com.skytracker.core.service.RedisService;
+import com.skytracker.core.service.RedisClient;
 import com.skytracker.kafka.service.TicketUpdateProducer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,7 +26,7 @@ public class FlightTrackingService {
 
     private final TicketUpdateProducer producer;
     private final AmadeusFlightSearchService amadeusService;
-    private final RedisService redisService;
+    private final RedisClient redisClient;
 
     /**
      * 가격 수집 및 가격변동 이벤트 발행 (9분)
@@ -34,7 +34,7 @@ public class FlightTrackingService {
     @Scheduled(cron = "0 */9 * * * *")
     public void collectAndPublishPrices() {
         try {
-            String accessToken = redisService.getValue(RedisKeys.AMADEUS_TOKEN);
+            String accessToken = redisClient.getValue(RedisKeys.AMADEUS_TOKEN);
             List<RouteAggregationDto> cachedHotRoutes = getCachedHotRoutes();
 
             int totalPublished = 0;
@@ -66,7 +66,7 @@ public class FlightTrackingService {
      * Redis 에서 상위 인기 노선 10개 Get
      */
     private List<RouteAggregationDto> getCachedHotRoutes() {
-        List<Object> rawList = redisService.getHashValues(RedisKeys.HOT_ROUTES);
+        List<Object> rawList = redisClient.getHashValues(RedisKeys.HOT_ROUTES);
         List<RouteAggregationDto> result = new ArrayList<>(rawList.size());
         for (Object json : rawList) {
             RouteAggregationDto dto = parseRouteAggregationDto(String.valueOf(json));

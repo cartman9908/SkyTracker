@@ -37,6 +37,7 @@ public class FlightAlertMapper {
                 .originLocationAirport(flightAlert.getDepartureAirport())
                 .destinationLocationAirport(flightAlert.getArrivalAirport())
                 .departureDate(flightAlert.getDepartureDate())
+                .returnDate(flightAlert.isRoundTrip() ? flightAlert.getArrivalDate() : null)
                 .travelClass(flightAlert.getTravelClass())
                 .currency(flightAlert.getCurrency())
                 .adults(flightAlert.getAdults())

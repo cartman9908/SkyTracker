@@ -5,7 +5,7 @@ import com.skytracker.dto.user.UserResponseDto;
 import com.skytracker.dto.user.UserUpdateRequestDto;
 import com.skytracker.security.auth.CustomUserDetails;
 import com.skytracker.security.auth.JwtUtils;
-import com.skytracker.service.TokenBlackListService;
+import com.skytracker.service.token.TokenBlackListService;
 import com.skytracker.service.UserService;
 import com.skytracker.validation.CustomValidators;
 import com.skytracker.validation.ValidationSequence;

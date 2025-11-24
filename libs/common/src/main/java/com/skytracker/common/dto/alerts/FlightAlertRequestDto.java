@@ -28,7 +28,6 @@ public class FlightAlertRequestDto {
     private Integer lastCheckedPrice;            // 마지막으로 확인된 가격
     private Integer newPrice;                    // 최신 가격 (갱신 후 저장)
 
-
     public String buildUniqueKey() {
         return String.join("-",
                 originLocationAirport,
@@ -58,6 +57,7 @@ public class FlightAlertRequestDto {
                 .nonStop(this.nonStop)
                 .roundTrip(this.roundTrip)
                 .max(1)
+                .currencyCode("KRW")
                 .build();
     }
 }

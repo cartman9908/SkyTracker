@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.skytracker.common.dto.flightSearch.FlightSearchResponseDto;
 import com.skytracker.common.exception.integrations.RouteKeyNotFoundException;
 import com.skytracker.core.constants.RedisKeys;
-import com.skytracker.core.service.RedisService;
+import com.skytracker.core.service.RedisClient;
 import com.skytracker.pricecollector.dto.SortedRouteDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,20 +19,29 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class RouteStoreUtil {
 
-    private final RedisService redisService;
+    private final RedisClient redisClient;
     private final ObjectMapper objectMapper;
 
-    public void routeStore(List<FlightSearchResponseDto> dtoList) throws JsonProcessingException {
+    public void routeStore(List<Object> dtoList) throws JsonProcessingException {
 
-        Map<Object, Object> rankingMap = redisService.getHash(RedisKeys.HOT_ROUTES);
+        Map<Object, Object> rankingMap = redisClient.getHash(RedisKeys.HOT_ROUTES);
 
-        for (FlightSearchResponseDto responseDto : dtoList) {
+        for (Object value : dtoList) {
+
+            FlightSearchResponseDto responseDto;
+
+            if (value instanceof FlightSearchResponseDto dto) {
+                responseDto = dto;
+            } else if (value instanceof String jsonString) {
+                responseDto = objectMapper.readValue(jsonString, FlightSearchResponseDto.class);
+            } else {
+                responseDto = objectMapper.convertValue(value, FlightSearchResponseDto.class);
+            }
 
             String json = objectMapper.writeValueAsString(responseDto);
+            SortedRouteDto sorted = SortedRouteDto.from(responseDto);
 
-            SortedRouteDto sortedRouteDto = SortedRouteDto.from(responseDto);
-
-            pushToRouteList(rankingMap, json, sortedRouteDto);
+            pushToRouteList(rankingMap, json, sorted);
         }
     }
 
@@ -42,13 +51,13 @@ public class RouteStoreUtil {
 
         String matchedRankField = rankingMap.entrySet().stream()
                 .map(e -> Map.entry(String.valueOf(e.getKey()), String.valueOf(e.getValue())))
-                .filter(e -> e.getValue().startsWith(routeKey + ":"))
+                .filter(e -> e.getValue().startsWith(routeKey + "_"))
                 .map(Map.Entry::getKey)
                 .findFirst()
                 .orElse(null);
 
         if (matchedRankField != null) {
-            redisService.pushList(routeKey, json);
+            redisClient.pushList(matchedRankField, json);
             log.info("push this key {}", matchedRankField);
         } else {
             throw new RouteKeyNotFoundException("해당 경로에 대한 랭킹 키를 찾을 수 없습니다. routeKey=" + routeKey);

@@ -2,7 +2,7 @@ package com.skytracker.handler;
 
 import com.skytracker.security.auth.CustomUserDetails;
 import com.skytracker.security.auth.JwtUtils;
-import com.skytracker.service.TokenBlackListService;
+import com.skytracker.service.token.TokenBlackListService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
