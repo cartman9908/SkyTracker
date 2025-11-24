@@ -15,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,9 +41,14 @@ public class FlightTrackingService {
 
             for (RouteAggregationDto route : cachedHotRoutes) {
 
-                log.info("출발: {}, 도착:{}, 인원:{}", route.getDepartureDate(), route.getArrivalDate(), route.getAdults());
+                if (!checkDayBefore(route)) {
+                    log.info("과거 출발일 노선 스킵: {}", route.getDepartureDate());
+                    continue;
+                }
+
                 FlightSearchRequestDto req = FlightSearchResponseMapper.toFlightSearchRequestDto(route);
-                log.info("출발: {}, 도착:{}, 인원:{}", req.getDepartureDate(), req.getReturnDate(), req.getAdults());
+
+                log.info("출발: {}, 왕복:{}, 인원:{}", req.getDepartureDate(), req.getReturnDate(), req.getAdults());
 
                 List<?> responses = amadeusService.searchFlights(accessToken, req);
                 for (Object responseDto : responses) {
@@ -88,5 +94,12 @@ public class FlightTrackingService {
             }
         } catch (NumberFormatException e) {
             throw new RouteAggregationException("유효하지 않은 HOT_ROUTES 포맷: " + s);        }
+    }
+
+    private boolean checkDayBefore(RouteAggregationDto dto) {
+        LocalDate today = LocalDate.now();
+
+        LocalDate departureDate = LocalDate.parse(dto.getDepartureDate());
+        return !departureDate.isBefore(today);
     }
 }
