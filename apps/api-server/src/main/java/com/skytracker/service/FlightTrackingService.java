@@ -30,7 +30,7 @@ public class FlightTrackingService {
     /**
      * 가격 수집 및 가격변동 이벤트 발행 (9분)
      */
-    @Scheduled(cron = "0 */9 * * * *")
+    @Scheduled(cron = "0 */1 * * * *")
     public void collectAndPublishPrices() {
         try {
             String accessToken = redisService.getValue(RedisKeys.AMADEUS_TOKEN);
