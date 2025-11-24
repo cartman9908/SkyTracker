@@ -4,6 +4,7 @@ import com.skytracker.common.dto.flightSearch.FlightSearchRequestDto;
 import com.skytracker.common.dto.flightSearch.FlightSearchResponseDto;
 import com.skytracker.core.service.AmadeusFlightSearchService;
 import com.skytracker.core.service.FlightSearchCache;
+import com.skytracker.dto.HotRouteBestPrice;
 import com.skytracker.service.token.AmadeusTokenManger;
 import com.skytracker.service.HotRankingService;
 import com.skytracker.service.SearchLogService;
@@ -62,7 +63,7 @@ public class FlightsController {
 
     @GetMapping("/hot-routes")
     public ResponseEntity<?> getHotRouteBestPrice() {
-        List<FlightSearchResponseDto> result = rankingService.getHotRouteBestPrice();
+        List<HotRouteBestPrice> result = rankingService.getHotRouteBestPrice();
         return ResponseEntity.ok().body(result);
     }
 }
