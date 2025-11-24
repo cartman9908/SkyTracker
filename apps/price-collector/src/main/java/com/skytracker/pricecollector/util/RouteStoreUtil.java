@@ -22,26 +22,17 @@ public class RouteStoreUtil {
     private final RedisService redisService;
     private final ObjectMapper objectMapper;
 
-    public void routeStore(List<Object> dtoList) throws JsonProcessingException {
+    public void routeStore(List<FlightSearchResponseDto> dtoList) throws JsonProcessingException {
 
         Map<Object, Object> rankingMap = redisService.getHash(RedisKeys.HOT_ROUTES);
 
-        for (Object value : dtoList) {
-
-            FlightSearchResponseDto responseDto;
-
-            if (value instanceof FlightSearchResponseDto dto) {
-                responseDto = dto;
-            } else if (value instanceof String jsonString) {
-                responseDto = objectMapper.readValue(jsonString, FlightSearchResponseDto.class);
-            } else {
-                responseDto = objectMapper.convertValue(value, FlightSearchResponseDto.class);
-            }
+        for (FlightSearchResponseDto responseDto : dtoList) {
 
             String json = objectMapper.writeValueAsString(responseDto);
-            SortedRouteDto sorted = SortedRouteDto.from(responseDto);
 
-            pushToRouteList(rankingMap, json, sorted);
+            SortedRouteDto sortedRouteDto = SortedRouteDto.from(responseDto);
+
+            pushToRouteList(rankingMap, json, sortedRouteDto);
         }
     }
 

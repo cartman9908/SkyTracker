@@ -13,7 +13,7 @@ spring:
       properties:
         spring.json.trusted.packages: "*"
         spring.json.use.type.headers: false
-        spring.json.value.default.type: com.skytracker.common.dto.alerts.FlightAlertEventMessageDto
+        spring.json.value.default.type: com.skytracker.common.dto.flightSearch.FlightSearchResponseDto
 
         partition.assignment.strategy: org.apache.kafka.clients.consumer.CooperativeStickyAssignor
         heartbeat.interval.ms: 3000
