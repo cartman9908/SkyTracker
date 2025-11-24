@@ -38,7 +38,7 @@ public class FlightAlertService {
      *  가격 변동 시 알림 메세지 발행 (3시간)
      */
     @Transactional
-    @Scheduled(cron = "0 */1 * * * *")
+    @Scheduled(cron = "0 */30 * * * *")
     public void publishFlightAlerts() {
         List<FlightAlertEventMessageDto> alertEvents = checkPrice();
         try {
