@@ -6,6 +6,9 @@ on:
       - 'feature/**'
     paths:
       - 'apps/api-server/**'
+      - 'libs/common/**'
+      - 'libs/core/**'
+      - 'adapters/kafka/**'
       - '.github/workflows/api-server-ci.yml'
 
 jobs:

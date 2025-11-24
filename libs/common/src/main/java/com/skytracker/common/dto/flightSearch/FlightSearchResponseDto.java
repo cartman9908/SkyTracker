@@ -1,15 +1,18 @@
 package com.skytracker.common.dto.flightSearch;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.skytracker.common.dto.enums.TravelClass;
 import com.skytracker.common.dto.enums.TripType;
 import lombok.*;
 
 import java.util.List;
 
+
 @Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class FlightSearchResponseDto {
 
     private TripType tripType;          // ONE_WAY / ROUND_TRIP
