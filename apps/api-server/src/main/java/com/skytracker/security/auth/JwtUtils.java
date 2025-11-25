@@ -1,8 +1,6 @@
 package com.skytracker.security.auth;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import lombok.Getter;
@@ -54,7 +52,15 @@ public class JwtUtils {
     }
 
     public String extractUserEmail(String token) {
-        return extractAllClaims(token).getSubject();
+        try {
+            return extractAllClaims(token).getSubject();
+        } catch (ExpiredJwtException e) {
+            log.info("Expired JWT token: {}", e.getMessage());
+            return null;
+        } catch (JwtException e) {
+            log.info("Invalid JWT token: {}", e.getMessage());
+            return null;
+        }
     }
 
     public Claims extractAllClaims(String token) {
