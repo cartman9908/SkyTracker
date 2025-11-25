@@ -22,8 +22,7 @@ public class RedisService {
     }
 
     public void pushList(String key, String json) {
-        redisTemplate.opsForList().rightPush(key, json);
-        redisTemplate.expire(key, Duration.ofMinutes(10));
+        redisTemplate.opsForList().rightPush(key, json,Duration.ofMinutes(10));
     }
 
     public List<String> getKeys(String key) {

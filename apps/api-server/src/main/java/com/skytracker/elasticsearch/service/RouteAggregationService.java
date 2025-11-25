@@ -47,10 +47,10 @@ public class RouteAggregationService {
 
     private String buildValue(EsAggregationDto dto) {
         if (dto.getArrivalDate() == null) {
-            return dto.getDepartureAirportCode() + "_" + dto.getArrivalAirport()
-                    + "_" + dto.getDepartureDate() + "_" + dto.getAdults()  + "_" + dto.getDocCount();
+            return dto.getDepartureAirportCode() + ":" + dto.getArrivalAirport()
+                    + ":" + dto.getDepartureDate() + ":" + dto.getAdults();
         }
-        return dto.getDepartureAirportCode() + "_" + dto.getArrivalAirport()
-                + "_" + dto.getDepartureDate() + "_" + dto.getArrivalDate() + "_" + dto.getAdults() + "_" + dto.getDocCount();
+        return dto.getDepartureAirportCode() + ":" + dto.getArrivalAirport()
+                + ":" + dto.getDepartureDate() + ":" + dto.getArrivalDate() + ":" + dto.getAdults();
     }
 }

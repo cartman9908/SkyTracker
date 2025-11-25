@@ -8,8 +8,6 @@ import com.skytracker.common.dto.flightSearch.FlightSearchResponseDto;
 import com.skytracker.common.exception.integrations.JsonMappingFailedException;
 import com.skytracker.core.constants.RedisKeys;
 import com.skytracker.core.service.RedisService;
-import com.skytracker.dto.FlightTicketDto;
-import com.skytracker.dto.HotRouteBestPrice;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -24,57 +22,69 @@ public class HotRankingService {
     private final RedisService redisService;
     private final ObjectMapper objectMapper;
 
-    public List<HotRouteBestPrice> getHotRouteBestPrice() {
+    /**
+     * 각 HOT_ROUTES:n 리스트에서 "최저가 1건"씩 뽑아서 반환
+     * 결과: 인기 노선별 최저가 티켓 목록
+     */
+    public List<FlightSearchResponseDto> getHotRouteBestPrice() {
 
-        List<HotRouteBestPrice> hotRouteBestPrices = new ArrayList<>();
+        List<FlightSearchResponseDto> result = new ArrayList<>();
 
-        List<String> sortedKeys = redisService.getKeys(RedisKeys.HOT_ROUTES + ":*");
+        List<String> keys = redisService.getKeys(RedisKeys.HOT_ROUTES + ":*");
 
-        for (String key : sortedKeys) {
+        keys.sort(Comparator.naturalOrder());
+
+        for (String key : keys) {
             try {
+                // Redis 리스트에 쌓인 JSON 문자열들
                 List<Object> values = redisService.getList(key);
 
-                List<FlightTicketDto> tickets = classifyDto(values);
+                // JSON → DTO 리스트
+                List<FlightSearchResponseDto> tickets = classifyDto(values);
 
+                // 해당 노선(HOT_ROUTES:n)에서 최저가 티켓 1건만 선택
                 tickets.stream()
-                        .min(Comparator.comparing(FlightTicketDto::getPrice))
-                        .map(HotRouteBestPrice::from)
-                        .ifPresent(hotRouteBestPrices::add);
+                        .min(Comparator.comparing(FlightSearchResponseDto::getTotalPrice))
+                        .ifPresent(result::add);
 
             } catch (JsonProcessingException e) {
                 throw new JsonMappingFailedException("역직렬화 실패: JSON 구조가 DTO와 맞지 않습니다", e);
             }
         }
-        return hotRouteBestPrices;
+
+        return result;
     }
 
     /**
-     * Redis에 저장된 JSON 리스트를 FlightTicketDto 리스트로 변환
+     * Redis에 저장된 JSON 리스트를 FlightSearchResponseDto 리스트로 변환
      */
-    private List<FlightTicketDto> classifyDto(List<Object> values) throws JsonProcessingException {
-        List<FlightTicketDto> flightTicketDtos = new ArrayList<>();
+    private List<FlightSearchResponseDto> classifyDto(List<Object> values) throws JsonProcessingException {
+        List<FlightSearchResponseDto> result = new ArrayList<>();
 
         try {
             for (Object value : values) {
+                if (value == null) {
+                    continue;
+                }
+
                 JsonNode node = objectMapper.readTree(value.toString());
 
-                // tripType은 필요하면 검증용으로만 사용 (ONE_WAY / ROUND_TRIP)
+                // tripType 필터 (원하면 유지, 아니면 삭제해도 됨)
                 String tripType = node.path("tripType").asText();
                 if (!"ONE_WAY".equals(tripType) && !"ROUND_TRIP".equals(tripType)) {
-                    // 이상한 값이면 스킵하거나 로그 남기기 선택
+                    // 이상한 값이면 스킵
                     continue;
                 }
 
                 FlightSearchResponseDto dto =
                         objectMapper.treeToValue(node, FlightSearchResponseDto.class);
 
-                // legs 기반 FlightTicketDto 생성
-                flightTicketDtos.add(FlightTicketDto.from(dto));
+                result.add(dto);
             }
         } catch (JsonMappingException e) {
             throw new JsonMappingFailedException("역직렬화 실패: JSON 구조가 DTO와 맞지 않습니다", e);
         }
 
-        return flightTicketDtos;
+        return result;
     }
 }

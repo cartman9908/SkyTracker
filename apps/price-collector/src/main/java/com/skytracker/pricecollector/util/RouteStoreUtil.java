@@ -42,13 +42,13 @@ public class RouteStoreUtil {
 
         String matchedRankField = rankingMap.entrySet().stream()
                 .map(e -> Map.entry(String.valueOf(e.getKey()), String.valueOf(e.getValue())))
-                .filter(e -> e.getValue().startsWith(routeKey + "_"))
+                .filter(e -> e.getValue().startsWith(routeKey + ":"))
                 .map(Map.Entry::getKey)
                 .findFirst()
                 .orElse(null);
 
         if (matchedRankField != null) {
-            redisService.pushList(matchedRankField, json);
+            redisService.pushList(routeKey, json);
             log.info("push this key {}", matchedRankField);
         } else {
             throw new RouteKeyNotFoundException("해당 경로에 대한 랭킹 키를 찾을 수 없습니다. routeKey=" + routeKey);

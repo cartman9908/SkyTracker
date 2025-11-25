@@ -53,6 +53,7 @@ public class FlightTrackingService {
                 List<?> responses = amadeusService.searchFlights(accessToken, req);
                 for (Object responseDto : responses) {
                     producer.sendTicketUpdate(responseDto);
+                    totalPublished++;
                 }
             }
             log.info("항공권 가격 수집 및 Kafka 발행 완료 ({}건)", totalPublished);
@@ -75,7 +76,7 @@ public class FlightTrackingService {
     }
 
     private RouteAggregationDto parseRouteAggregationDto(String s) {
-        String[] t = s.split("_");
+        String[] t = s.split(":");
         try {
             if (t.length == 6) {
                 return new RouteAggregationDto(
