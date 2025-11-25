@@ -28,25 +28,23 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String token = resolveToken(request);
-        log.info("token = {}", token);
 
         if (!StringUtils.hasText(token)) {
             log.info("Jwt token is empty");
-            filterChain.doFilter(request, response);
             return;
         }
 
         if (tokenBlackListService.isBlackList(token)) {
             log.info("Blacklisted token: {}", token);
-            filterChain.doFilter(request, response);
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid access token");
             return;
         }
 
         String username = jwtUtils.extractUserEmail(token);
 
         if (username == null) {
-            log.info("Invalid token, Incorrect username : {}", username);
-            filterChain.doFilter(request, response);
+            log.info("Invalid token, Incorrect username");
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid access token");
             return;
         }
 

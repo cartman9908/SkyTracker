@@ -7,7 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.skytracker.common.dto.flightSearch.FlightSearchResponseDto;
 import com.skytracker.common.exception.integrations.JsonMappingFailedException;
 import com.skytracker.core.constants.RedisKeys;
-import com.skytracker.core.service.RedisService;
+import com.skytracker.core.service.RedisClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +19,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class HotRankingService {
 
-    private final RedisService redisService;
+    private final RedisClient redisClient;
     private final ObjectMapper objectMapper;
 
     /**
@@ -30,14 +30,14 @@ public class HotRankingService {
 
         List<FlightSearchResponseDto> result = new ArrayList<>();
 
-        List<String> keys = redisService.getKeys(RedisKeys.HOT_ROUTES + ":*");
+        List<String> keys = redisClient.getKeys(RedisKeys.HOT_ROUTES + ":*");
 
         keys.sort(Comparator.naturalOrder());
 
         for (String key : keys) {
             try {
                 // Redis 리스트에 쌓인 JSON 문자열들
-                List<Object> values = redisService.getList(key);
+                List<Object> values = redisClient.getList(key);
 
                 // JSON → DTO 리스트
                 List<FlightSearchResponseDto> tickets = classifyDto(values);
