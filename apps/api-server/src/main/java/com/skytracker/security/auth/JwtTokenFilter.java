@@ -31,7 +31,6 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
         if (!StringUtils.hasText(token)) {
             log.info("Jwt token is empty");
-            filterChain.doFilter(request, response);
             return;
         }
 

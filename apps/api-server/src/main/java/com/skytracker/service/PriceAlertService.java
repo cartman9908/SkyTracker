@@ -41,6 +41,7 @@ public class PriceAlertService {
                 .orElseThrow(() -> new UserNotFoundException(userId));
 
         boolean alreadyRegistered = userFlightAlertRepository.existsByUserAndFlightAlert(user, flightAlert);
+
         if (alreadyRegistered) {
             log.info("중복 여부: {}", alreadyRegistered);
             throw new AlertAlreadyRegisteredException();
