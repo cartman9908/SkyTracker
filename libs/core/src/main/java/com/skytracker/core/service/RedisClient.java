@@ -22,15 +22,7 @@ public class RedisClient {
     }
 
     public void pushList(String key, String json) {
-        redisTemplate.opsForList().rightPush(key, json,Duration.ofMinutes(10));
-    }
-
-    public List<String> getKeys(String key) {
-        return new ArrayList<>(Objects.requireNonNull(redisTemplate.keys(key)));
-    }
-
-    public List<Object> getList(String key) {
-        return redisTemplate.opsForList().range(key, 0, -1);
+        redisTemplate.opsForList().rightPush(key, json);
     }
 
     public List<Object> getHashValues(String key) {
@@ -41,12 +33,14 @@ public class RedisClient {
         return redisTemplate.opsForHash().entries(key);
     }
 
-    public void rename(String fromKey, String toKey) {
-        redisTemplate.rename(fromKey, toKey);
+    public List<String> getList(String key) {
+        List<Object> values = redisTemplate.opsForList().range(key, 0, -1);
+        return values == null ? List.of() :
+                values.stream().map(String::valueOf).toList();
     }
 
-    public void hashPut(String key, String field, String value) {
-        redisTemplate.opsForHash().put(key, field, value);
+    public void rename(String fromKey, String toKey) {
+        redisTemplate.rename(fromKey, toKey);
     }
 
     public void setValueWithTTL(String key, String value, Duration ttl) {

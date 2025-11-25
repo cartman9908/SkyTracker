@@ -22,30 +22,34 @@ public class RouteAggregationService {
     @Scheduled(cron = "0 0 0 * * *")
     public void updateHotRoutes() {
         try {
+            // 1) ES에서 Top 10 가져오기
             List<EsAggregationDto> topRoutes = esAggregationService.getTopRoutes(10);
             topRoutes.sort(Comparator.comparingLong(EsAggregationDto::getDocCount).reversed());
 
-            redisClient.delete(RedisKeys.HOT_ROUTES_TMP);
+            // 2) uniqueKey 리스트로 변환
+            List<String> topUniqueKeys = topRoutes.stream()
+                    .map(this::toUniqueKeyFromEsAgg)   // 예: "YVR:ICN:2025-11-02:2025-11-29:1"
+                    .toList();
 
-            int rank = 1;
-            for (EsAggregationDto route : topRoutes) {
-                String redisKey = RedisKeys.HOT_ROUTES_TMP;
-                String field = RedisKeys.HOT_ROUTES + ":" + rank;
-                String value = buildValue(route);
+            // 3) 임시 리스트에 먼저 채우기
+            String tmpKey = RedisKeys.HOT_ROUTES + ":TMP"; // 예: "HOT_ROUTES:TMP"
+            redisClient.delete(tmpKey);
 
-                redisClient.hashPut(redisKey, field, value);
-                rank++;
+            for (String uniqueKey : topUniqueKeys) {
+                // HOT_ROUTES는 랭킹 목록이니까 TTL 없이 그냥 저장해도 됨
+                redisClient.pushList(tmpKey, uniqueKey);
             }
 
-            redisClient.rename(RedisKeys.HOT_ROUTES_TMP, RedisKeys.HOT_ROUTES);
+            // 4) 원자적으로 교체 (기존 HOT_ROUTES ← TMP로 스위칭)
+            redisClient.rename(tmpKey, RedisKeys.HOT_ROUTES); // 예: "HOT_ROUTES"
 
-            log.info("인기 노선 캐싱 성공");
+            log.info("인기 노선(HOT_ROUTES) 리스트 캐싱 성공. size={}", topUniqueKeys.size());
         } catch (Exception e) {
-            log.error("인기 노선 캐싱 실패", e);
+            log.error("인기 노선(HOT_ROUTES) 리스트 캐싱 실패", e);
         }
     }
 
-    private String buildValue(EsAggregationDto dto) {
+    private String toUniqueKeyFromEsAgg(EsAggregationDto dto) {
         if (dto.getArrivalDate() == null) {
             return dto.getDepartureAirportCode() + ":" + dto.getArrivalAirport()
                     + ":" + dto.getDepartureDate() + ":" + dto.getAdults();

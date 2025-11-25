@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 
@@ -48,7 +49,7 @@ public class RouteStoreUtil {
                 .orElse(null);
 
         if (matchedRankField != null) {
-            redisClient.pushList(matchedRankField, json);
+            redisClient.pushList(routeKey, json);
             log.info("push this key {}", matchedRankField);
         } else {
             throw new RouteKeyNotFoundException("해당 경로에 대한 랭킹 키를 찾을 수 없습니다. routeKey=" + routeKey);

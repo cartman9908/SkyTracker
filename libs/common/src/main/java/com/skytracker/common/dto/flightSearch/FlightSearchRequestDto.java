@@ -28,19 +28,23 @@ public class FlightSearchRequestDto {
     private int max;                         // 최대 응답 개수
 
     public String buildUniqueKey() {
+        // 왕복 + returnDate 존재하면 왕복 키
+        if (roundTrip && returnDate != null && !returnDate.isBlank()) {
+            return String.join(":",
+                    originLocationAirport,
+                    destinationLocationAirport,
+                    departureDate,
+                    returnDate,
+                    String.valueOf(adults)
+            );
+        }
+
+        // 그 외는 편도 키
         return String.join(":",
-                "flightSearch",
                 originLocationAirport,
                 destinationLocationAirport,
                 departureDate,
-                returnDate != null ? returnDate : "NONE",
-                travelClass != null ? travelClass.name() : "ANY",
-                currencyCode != null ? currencyCode : "DEFAULT",
-                roundTrip ? "ROUND" : "ONEWAY",
-                nonStop ? "DIRECT" : "ANY",
-                "A" + adults, // adults=1 → A1
-                "MAX" + max
+                String.valueOf(adults)
         );
     }
-
 }

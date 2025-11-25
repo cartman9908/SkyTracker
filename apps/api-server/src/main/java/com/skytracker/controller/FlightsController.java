@@ -1,10 +1,10 @@
 package com.skytracker.controller;
 
+import com.skytracker.common.dto.HotRouteSummaryDto;
 import com.skytracker.common.dto.flightSearch.FlightSearchRequestDto;
 import com.skytracker.common.dto.flightSearch.FlightSearchResponseDto;
 import com.skytracker.core.service.AmadeusFlightSearchService;
 import com.skytracker.core.service.FlightSearchCache;
-import com.skytracker.dto.HotRouteBestPrice;
 import com.skytracker.service.token.AmadeusTokenManger;
 import com.skytracker.service.HotRankingService;
 import com.skytracker.service.SearchLogService;
@@ -51,7 +51,6 @@ public class FlightsController {
 
             // 2. 캐시 미스 or 캐시 값 문제 시 → API 호출
             results = flightSearchService.searchFlights(token, dto);
-            flightSearchCache.putSearch(uniqueKey, results);
 
             return ResponseEntity.ok(results);
 
@@ -62,8 +61,9 @@ public class FlightsController {
     }
 
     @GetMapping("/hot-routes")
-    public ResponseEntity<?> getHotRouteBestPrice() {
-        List<HotRouteBestPrice> result = rankingService.getHotRouteBestPrice();
-        return ResponseEntity.ok().body(result);
+    public ResponseEntity<List<HotRouteSummaryDto>> getHotRouteBestPrice() {
+        List<HotRouteSummaryDto> result = rankingService.getHotRouteSummary();
+        return ResponseEntity.ok(result);
     }
+
 }
