@@ -43,7 +43,7 @@ public class RouteStoreUtil {
 
         String matchedRankField = rankingMap.entrySet().stream()
                 .map(e -> Map.entry(String.valueOf(e.getKey()), String.valueOf(e.getValue())))
-                .filter(e -> e.getValue().startsWith(routeKey + "_"))
+                .filter(e -> e.getValue().startsWith(routeKey + ":"))
                 .map(Map.Entry::getKey)
                 .findFirst()
                 .orElse(null);
@@ -64,7 +64,7 @@ public class RouteStoreUtil {
         String arrivalTime = dto.getArrivalTime();
 
         return (dto.getArrivalTime() == null)
-                ? String.join("_", departureAirport, arrivalAirport, departureTime)
-                : String.join("_", departureAirport, arrivalAirport, departureTime, arrivalTime);
+                ? String.join(":", departureAirport, arrivalAirport, departureTime)
+                : String.join(":", departureAirport, arrivalAirport, departureTime, arrivalTime);
     }
 }
