@@ -66,37 +66,47 @@ public class FlightTrackingService {
      * Redis 에서 상위 인기 노선 10개 Get
      */
     private List<RouteAggregationDto> getCachedHotRoutes() {
-        List<Object> rawList = redisClient.getHashValues(RedisKeys.HOT_ROUTES);
+        List<String> rawList = redisClient.getList(RedisKeys.HOT_ROUTES);
+
         List<RouteAggregationDto> result = new ArrayList<>(rawList.size());
-        for (Object json : rawList) {
-            RouteAggregationDto dto = parseRouteAggregationDto(String.valueOf(json));
+        if (rawList.isEmpty()) {
+            return result;
+        }
+
+        for (String s : rawList) {
+            RouteAggregationDto dto = parseRouteAggregationDto(s);
             result.add(dto);
         }
+
         return result;
     }
 
     private RouteAggregationDto parseRouteAggregationDto(String s) {
         String[] t = s.split(":");
         try {
-            if (t.length == 6) {
+            if (t.length == 5) {
                 return new RouteAggregationDto(
-                        t[0], t[1], t[2], t[3],
-                        Integer.parseInt(t[4]),
-                        Long.parseLong(t[5])
+                        t[0],
+                        t[1],
+                        t[2],
+                        t[3],
+                        Integer.parseInt(t[4])
                 );
-            } else if (t.length == 5) {
+            } else if (t.length == 4) {
                 return new RouteAggregationDto(
-                        t[0], t[1], t[2],
-                        null, Integer.parseInt(t[3]),
-                        Long.parseLong(t[4])
+                        t[0],
+                        t[1],
+                        t[2],
+                        null,
+                        Integer.parseInt(t[3])
                 );
             } else {
                 throw new HotRouteParsedFailed(s);
             }
         } catch (NumberFormatException e) {
-            throw new RouteAggregationException("유효하지 않은 HOT_ROUTES 포맷: " + s);        }
+            throw new RouteAggregationException("유효하지 않은 HOT_ROUTES 포맷: " + e);
+        }
     }
-
     private boolean checkDayBefore(RouteAggregationDto dto) {
         LocalDate today = LocalDate.now();
 
