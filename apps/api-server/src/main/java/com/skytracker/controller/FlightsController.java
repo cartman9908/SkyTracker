@@ -36,6 +36,7 @@ public class FlightsController {
 
             String token = amadeusService.getAmadeusAccessToken();
             String uniqueKey = dto.buildUniqueKey();
+            System.out.println(dto.getReturnDate());
 
             log.info("unique key: {}", uniqueKey);
 
