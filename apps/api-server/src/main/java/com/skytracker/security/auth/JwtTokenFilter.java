@@ -29,6 +29,8 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String token = resolveToken(request);
 
+        log.info("requestUri: {}", request.getRequestURI());
+
         if (!StringUtils.hasText(token)) {
             log.info("Jwt token is empty");
             return;
