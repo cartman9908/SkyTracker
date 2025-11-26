@@ -47,7 +47,7 @@ public class RouteStoreUtil {
         String dep = dto.getDepartureAirportCode();
         String arr = dto.getArrivalAirportCode();
         String depDate = dto.getDepartureTime();
-        String retDate = dto.getArrivalTime();
+        String retDate = dto.getReturnDepartureTime();
         String adults = "1";
 
         if (retDate == null) {

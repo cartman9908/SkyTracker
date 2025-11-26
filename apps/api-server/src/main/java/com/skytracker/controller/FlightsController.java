@@ -46,10 +46,10 @@ public class FlightsController {
                 results = flightSearchCache.cacheSearch(uniqueKey);
                 // 역직렬화 실패 등으로 null 나올 수도 있으니 한 번 더 방어
                 if (results != null) {
-                    log.debug("Cache HIT: {}", uniqueKey);
+                    log.info("Cache HIT: {}", uniqueKey);
                     return ResponseEntity.ok(results);
                 }
-                log.debug("Cache key exists but value is invalid, falling back to API: {}", uniqueKey);
+                log.info("Cache key exists but value is invalid, falling back to API: {}", uniqueKey);
             }
 
             log.info("Before search");
