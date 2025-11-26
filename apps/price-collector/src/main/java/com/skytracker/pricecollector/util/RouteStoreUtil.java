@@ -26,7 +26,7 @@ public class RouteStoreUtil {
         List<String> rankingList = redisClient.getList(RedisKeys.HOT_ROUTES);
 
         if (rankingList == null || rankingList.isEmpty()) {
-            log.debug("HOT_ROUTES 데이터 없음 → 저장 스킵");
+            log.info("HOT_ROUTES 데이터 없음 → 저장 스킵");
             return;
         }
 
@@ -34,13 +34,13 @@ public class RouteStoreUtil {
 
             String key = getRouteKey(SortedRouteDto.from(responseDto)); // 변환 필요 시
             if (!rankingList.contains(key)) {
-                log.debug("Key 미일치 → 저장 스킵: {}", key);
+                log.info("Key 미일치 → 저장 스킵: {}", key);
                 continue;
             }
 
             String json = objectMapper.writeValueAsString(responseDto);
             redisClient.setValueWithTTL(key, json, Duration.ofMinutes(10));
-            log.debug("HOT ROUTE 저장 성공: {}", key);
+            log.info("HOT ROUTE 저장 성공: {}", key);
         }
     }
 
