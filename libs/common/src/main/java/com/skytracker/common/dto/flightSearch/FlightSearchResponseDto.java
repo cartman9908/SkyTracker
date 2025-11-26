@@ -49,6 +49,5 @@ public class FlightSearchResponseDto {
 
         private boolean nonStop;            // 이 leg 기준 직항(true) / 경유(false)
         private int numberOfStops;          // 이 leg 기준 경유 횟수 (0=직항, 1=1회 경유)
-        private int adults;
     }
 }
