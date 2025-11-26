@@ -3,7 +3,6 @@ package com.skytracker.pricecollector.util;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.skytracker.common.dto.flightSearch.FlightSearchResponseDto;
-import com.skytracker.common.exception.integrations.RouteKeyNotFoundException;
 import com.skytracker.core.constants.RedisKeys;
 import com.skytracker.core.service.RedisClient;
 import com.skytracker.pricecollector.dto.SortedRouteDto;
@@ -11,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.time.Duration;
 import java.util.List;
 
 @Slf4j
