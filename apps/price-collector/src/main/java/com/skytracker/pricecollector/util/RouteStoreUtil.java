@@ -11,9 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.time.Duration;
 import java.util.List;
-import java.util.Map;
 
 @Service
 @Slf4j
@@ -25,7 +23,7 @@ public class RouteStoreUtil {
 
     public void routeStore(List<FlightSearchResponseDto> dtoList) throws JsonProcessingException {
 
-        Map<Object, Object> rankingMap = redisClient.getHash(RedisKeys.HOT_ROUTES);
+        List<String> rankingList = redisClient.getList(RedisKeys.HOT_ROUTES);
 
         for (FlightSearchResponseDto responseDto : dtoList) {
 
@@ -33,24 +31,20 @@ public class RouteStoreUtil {
 
             SortedRouteDto sortedRouteDto = SortedRouteDto.from(responseDto);
 
-            pushToRouteList(rankingMap, json, sortedRouteDto);
+            pushToRouteList(rankingList, json, sortedRouteDto);
         }
     }
 
-    private void pushToRouteList(Map<Object,Object> rankingMap, String json, SortedRouteDto sortedRouteDto) {
+    private void pushToRouteList(List<String> rankingList, String json, SortedRouteDto sortedRouteDto) {
 
         String routeKey = getRouteKey(sortedRouteDto);
 
-        String matchedRankField = rankingMap.entrySet().stream()
-                .map(e -> Map.entry(String.valueOf(e.getKey()), String.valueOf(e.getValue())))
-                .filter(e -> e.getValue().startsWith(routeKey + ":"))
-                .map(Map.Entry::getKey)
-                .findFirst()
-                .orElse(null);
+        boolean exists = rankingList.stream()
+                .anyMatch(k -> k.equals(routeKey));
 
-        if (matchedRankField != null) {
+        if (exists) {
             redisClient.pushList(routeKey, json);
-            log.info("push this key {}", matchedRankField);
+            log.info("push this key {}", routeKey);
         } else {
             throw new RouteKeyNotFoundException("해당 경로에 대한 랭킹 키를 찾을 수 없습니다. routeKey=" + routeKey);
         }
@@ -58,13 +52,14 @@ public class RouteStoreUtil {
 
     private String getRouteKey(SortedRouteDto dto) {
 
-        String departureAirport = dto.getDepartureAirportCode();
-        String arrivalAirport = dto.getArrivalAirportCode();
-        String departureTime = dto.getDepartureTime();
-        String arrivalTime = dto.getArrivalTime();
+        String dep = dto.getDepartureAirportCode();
+        String arr = dto.getArrivalAirportCode();
+        String depDate = dto.getDepartureTime();
+        String retDate = dto.getArrivalTime();
 
-        return (dto.getArrivalTime() == null)
-                ? String.join(":", departureAirport, arrivalAirport, departureTime)
-                : String.join(":", departureAirport, arrivalAirport, departureTime, arrivalTime);
+        if (retDate == null) {
+            return String.join(":", dep, arr, depDate);
+        }
+        return String.join(":", dep, arr, depDate, retDate);
     }
 }
