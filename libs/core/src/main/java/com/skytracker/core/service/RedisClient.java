@@ -56,4 +56,9 @@ public class RedisClient {
     public void setBlackList(String key, boolean value, long ttl, TimeUnit unit) {
         redisTemplate.opsForValue().set(key, String.valueOf(value), ttl, unit);
     }
+
+    public void kafkaPushList(String key, String json) {
+        redisTemplate.opsForList().rightPush(key, json);
+        redisTemplate.expire(key, Duration.ofMinutes(9));
+    }
 }

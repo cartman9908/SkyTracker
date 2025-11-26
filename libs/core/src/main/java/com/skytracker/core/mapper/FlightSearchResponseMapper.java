@@ -14,7 +14,7 @@ public class FlightSearchResponseMapper {
                 .returnDate(route.getArrivalDate())
                 .adults(route.getAdults())
                 .travelClass(TravelClass.ECONOMY)
-                .max(100)
+                .max(20)
                 .currencyCode("KRW")
                 .build();
     }

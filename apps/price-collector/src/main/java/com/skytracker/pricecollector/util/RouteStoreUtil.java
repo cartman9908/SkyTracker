@@ -39,7 +39,7 @@ public class RouteStoreUtil {
             }
 
             String json = objectMapper.writeValueAsString(responseDto);
-            redisClient.setValueWithTTL(key, json, Duration.ofMinutes(10));
+            redisClient.kafkaPushList(key, json);
             log.info("HOT ROUTE 저장 성공: {}", key);
         }
     }

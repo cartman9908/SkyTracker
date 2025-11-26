@@ -10,6 +10,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -26,18 +27,26 @@ public class FlightSearchCache {
     }
 
     public List<FlightSearchResponseDto> cacheSearch(String key) {
-        Object cached = redisTemplate.opsForValue().get(key);
-        if (cached == null) {
-            log.info("No cached flight search response");
-            return null;
-        }
-
         try {
-            String json = cached.toString();
-            return objectMapper.readValue(json, new TypeReference<List<FlightSearchResponseDto>>() {});
-        } catch (JsonProcessingException e) {
-            log.error("Failed to deserialize cache value for key={}", key, e);
-            return null; // 역직렬화 실패 시 캐시 무시하고 새로 조회하게
+            List<Object> cachedList = redisTemplate.opsForList().range(key, 0, -1);
+            if (cachedList == null || cachedList.isEmpty()) {
+                log.info("No cached list found for key={}", key);
+                return null;
+            }
+
+            List<FlightSearchResponseDto> results = new ArrayList<>();
+            for (Object obj : cachedList) {
+                String json = obj.toString();
+                FlightSearchResponseDto dto = objectMapper.readValue(json, FlightSearchResponseDto.class);
+                results.add(dto);
+            }
+
+            log.debug("Cache HIT[List]: {} (size={})", key, results.size());
+            return results;
+
+        } catch (Exception e) {
+            log.error("Failed to deserialize Redis LIST key={}", key, e);
+            return null;
         }
     }
 

@@ -16,4 +16,5 @@ public class RouteAggregationDto {
     private String departureDate;         // 25-08-10
     private String arrivalDate;           // 25-08-15 or Null
     private int adults;
+
 }
