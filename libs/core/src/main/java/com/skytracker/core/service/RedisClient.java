@@ -25,14 +25,6 @@ public class RedisClient {
         redisTemplate.opsForList().rightPush(key, json);
     }
 
-    public List<Object> getHashValues(String key) {
-        return redisTemplate.opsForHash().values(key);
-    }
-
-    public Map<Object, Object> getHash(String key) {
-        return redisTemplate.opsForHash().entries(key);
-    }
-
     public List<String> getList(String key) {
         List<Object> values = redisTemplate.opsForList().range(key, 0, -1);
         return values == null ? List.of() :
