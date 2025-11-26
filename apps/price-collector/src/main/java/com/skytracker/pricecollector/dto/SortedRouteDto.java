@@ -16,6 +16,7 @@ public class SortedRouteDto {
     private String arrivalAirportCode;
     private String departureTime; // yyyy-MM-dd
     private String arrivalTime;   // 왕복이면 yyyy-MM-dd, 편도면 null
+    private int adults;
     // 성인 인원수 넣어야하지 않을까?
 
     public static SortedRouteDto from(FlightSearchResponseDto dto) {
@@ -30,6 +31,7 @@ public class SortedRouteDto {
                 .arrivalAirportCode(outbound.getArrivalAirport())
                 .departureTime(outbound.getDepartureTime().substring(0, 10))
                 .arrivalTime(inbound != null ? inbound.getArrivalTime().substring(0, 10) : null)
+                .adults(outbound.getAdults())
                 .build();
     }
 }

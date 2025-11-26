@@ -57,10 +57,11 @@ public class RouteStoreUtil {
         String arr = dto.getArrivalAirportCode();
         String depDate = dto.getDepartureTime();
         String retDate = dto.getArrivalTime();
+        String adults = String.valueOf(dto.getAdults());
 
         if (retDate == null) {
-            return String.join(":", dep, arr, depDate);
+            return String.join(":", dep, arr, depDate, adults);
         }
-        return String.join(":", dep, arr, depDate, retDate);
+        return String.join(":", dep, arr, depDate, retDate, adults);
     }
 }
