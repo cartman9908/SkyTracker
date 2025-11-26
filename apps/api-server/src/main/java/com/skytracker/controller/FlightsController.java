@@ -36,7 +36,6 @@ public class FlightsController {
 
             String token = amadeusService.getAmadeusAccessToken();
             String uniqueKey = dto.buildUniqueKey();
-            System.out.println(dto.getReturnDate());
 
             log.info("unique key: {}", uniqueKey);
 
@@ -53,12 +52,8 @@ public class FlightsController {
                 log.info("Cache key exists but value is invalid, falling back to API: {}", uniqueKey);
             }
 
-            log.info("Before search");
-
             // 2. 캐시 미스 or 캐시 값 문제 시 → API 호출
             results = flightSearchService.searchFlights(token, dto);
-
-            log.info("After search");
 
             return ResponseEntity.ok(results);
         } catch (Exception e) {

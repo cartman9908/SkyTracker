@@ -67,36 +67,3 @@ public class HotRankingService {
                 .build();
     }
 }
-
-//    /**
-//     * Redis에 저장된 JSON 리스트(String)를 FlightSearchResponseDto 리스트로 변환
-//     */
-//    private List<FlightSearchResponseDto> classifyDto(List<String> values) throws JsonProcessingException {
-//        List<FlightSearchResponseDto> result = new ArrayList<>();
-//
-//        try {
-//            for (String value : values) {
-//                if (value == null) {
-//                    continue;
-//                }
-//
-//                JsonNode node = objectMapper.readTree(value);
-//
-//                // tripType 필터 (필요 없으면 이 블록 제거해도 됨)
-//                String tripType = node.path("tripType").asText();
-//                if (!"ONE_WAY".equals(tripType) && !"ROUND_TRIP".equals(tripType)) {
-//                    // 이상한 값이면 스킵
-//                    continue;
-//                }
-//
-//                FlightSearchResponseDto dto =
-//                        objectMapper.treeToValue(node, FlightSearchResponseDto.class);
-//
-//                result.add(dto);
-//            }
-//        } catch (JsonMappingException e) {
-//            throw new JsonMappingFailedException("역직렬화 실패: JSON 구조가 DTO와 맞지 않습니다", e);
-//        }
-//
-//        return result;
-//    }
