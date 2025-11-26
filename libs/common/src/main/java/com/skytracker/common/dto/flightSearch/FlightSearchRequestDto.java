@@ -29,7 +29,7 @@ public class FlightSearchRequestDto {
 
     public String buildUniqueKey() {
         // 왕복 + returnDate 존재하면 왕복 키
-        if (roundTrip && returnDate != null && !returnDate.isBlank()) {
+        if (returnDate != null && !returnDate.isBlank()) {
             return String.join(":",
                     originLocationAirport,
                     destinationLocationAirport,

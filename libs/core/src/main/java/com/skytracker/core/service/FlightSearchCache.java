@@ -41,7 +41,7 @@ public class FlightSearchCache {
                 results.add(dto);
             }
 
-            log.debug("Cache HIT[List]: {} (size={})", key, results.size());
+            log.info("Cache HIT[List]: {} (size={})", key, results.size());
             return results;
 
         } catch (Exception e) {
