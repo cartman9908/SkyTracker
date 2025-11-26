@@ -19,7 +19,7 @@ public class RouteAggregationService {
     private final ElasticAggregationService esAggregationService;
     private final RedisClient redisClient;
 
-    @Scheduled(cron = "0 0 0 * * *")
+    @Scheduled(cron = "0 */1 * * * *")
     public void updateHotRoutes() {
         try {
             // 1) ES에서 Top 10 가져오기

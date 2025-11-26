@@ -32,9 +32,12 @@ public class FlightsController {
     public ResponseEntity<?> searchFlights(@RequestBody @Valid FlightSearchRequestDto dto) {
         try {
             searchLogService.publishSearchLog(dto);
+            log.info("Successfully published search log");
 
             String token = amadeusService.getAmadeusAccessToken();
             String uniqueKey = dto.buildUniqueKey();
+
+            log.info("unique key: {}", uniqueKey);
 
             List<FlightSearchResponseDto> results;
 
@@ -49,11 +52,14 @@ public class FlightsController {
                 log.debug("Cache key exists but value is invalid, falling back to API: {}", uniqueKey);
             }
 
+            log.info("Before search");
+
             // 2. 캐시 미스 or 캐시 값 문제 시 → API 호출
             results = flightSearchService.searchFlights(token, dto);
 
-            return ResponseEntity.ok(results);
+            log.info("After search");
 
+            return ResponseEntity.ok(results);
         } catch (Exception e) {
             log.error("Flight search failed", e);
             return ResponseEntity.internalServerError().body("Internal error: " + e.getMessage());
