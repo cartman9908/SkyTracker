@@ -14,8 +14,8 @@ import org.springframework.stereotype.Service;
 import java.time.Duration;
 import java.util.List;
 
-@Service
 @Slf4j
+@Service
 @RequiredArgsConstructor
 public class RouteStoreUtil {
 
@@ -23,31 +23,24 @@ public class RouteStoreUtil {
     private final ObjectMapper objectMapper;
 
     public void routeStore(List<FlightSearchResponseDto> dtoList) throws JsonProcessingException {
-
         List<String> rankingList = redisClient.getList(RedisKeys.HOT_ROUTES);
+
+        if (rankingList == null || rankingList.isEmpty()) {
+            log.debug("HOT_ROUTES 데이터 없음 → 저장 스킵");
+            return;
+        }
 
         for (FlightSearchResponseDto responseDto : dtoList) {
 
+            String key = getRouteKey(SortedRouteDto.from(responseDto)); // 변환 필요 시
+            if (!rankingList.contains(key)) {
+                log.debug("Key 미일치 → 저장 스킵: {}", key);
+                continue;
+            }
+
             String json = objectMapper.writeValueAsString(responseDto);
-
-            SortedRouteDto sortedRouteDto = SortedRouteDto.from(responseDto);
-
-            pushToRouteList(rankingList, json, sortedRouteDto);
-        }
-    }
-
-    private void pushToRouteList(List<String> rankingList, String json, SortedRouteDto sortedRouteDto) {
-
-        String routeKey = getRouteKey(sortedRouteDto);
-
-        boolean exists = rankingList.stream()
-                .anyMatch(k -> k.equals(routeKey));
-
-        if (exists) {
-            redisClient.setValueWithTTL(routeKey, json, Duration.ofMinutes(9));
-            log.info("push this key {}", routeKey);
-        } else {
-            throw new RouteKeyNotFoundException("해당 경로에 대한 랭킹 키를 찾을 수 없습니다. routeKey=" + routeKey);
+            redisClient.setValueWithTTL(key, json, Duration.ofMinutes(10));
+            log.debug("HOT ROUTE 저장 성공: {}", key);
         }
     }
 
