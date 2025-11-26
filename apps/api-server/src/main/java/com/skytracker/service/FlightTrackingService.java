@@ -19,8 +19,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-@Service
 @Slf4j
+@Service
 @RequiredArgsConstructor
 public class FlightTrackingService {
 
@@ -37,6 +37,7 @@ public class FlightTrackingService {
             String accessToken = redisClient.getValue(RedisKeys.AMADEUS_TOKEN);
             List<RouteAggregationDto> cachedHotRoutes = getCachedHotRoutes();
 
+            log.info("cached List : {}", cachedHotRoutes);
             int totalPublished = 0;
 
             for (RouteAggregationDto route : cachedHotRoutes) {
@@ -67,6 +68,7 @@ public class FlightTrackingService {
      */
     private List<RouteAggregationDto> getCachedHotRoutes() {
         List<String> rawList = redisClient.getList(RedisKeys.HOT_ROUTES);
+        log.info("redis List: {}", rawList);
 
         List<RouteAggregationDto> result = new ArrayList<>(rawList.size());
         if (rawList.isEmpty()) {
