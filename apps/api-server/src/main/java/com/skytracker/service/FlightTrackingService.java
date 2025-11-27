@@ -109,6 +109,7 @@ public class FlightTrackingService {
             throw new RouteAggregationException("유효하지 않은 HOT_ROUTES 포맷: " + e);
         }
     }
+
     private boolean checkDayBefore(RouteAggregationDto dto) {
         LocalDate today = LocalDate.now();
 

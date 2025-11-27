@@ -45,7 +45,7 @@ public class RouteStoreUtil {
 
             // 최저가 비교 후 갱신
             if (currentMin == null || price < currentMin) {
-                redisClient.setValueWithTTL(minPriceKey, String.valueOf(price), Duration.ofMinutes(9));
+                redisClient.setValueWithTTL(minPriceKey, String.valueOf(price), Duration.ofMinutes(10));
                 log.info("HOT ROUTE 최저가 갱신: {} -> {}", key, price);
             }
 
