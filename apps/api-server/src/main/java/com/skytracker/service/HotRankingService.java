@@ -42,6 +42,8 @@ public class HotRankingService {
 
     private HotRouteSummaryDto parseUniqueKey(String key, int rank) {
 
+        int minPrice = redisClient.getminPrice(key);
+
         String[] parts = key.split(":");
 
         if (parts.length < 4 || parts.length > 5) {
@@ -64,6 +66,7 @@ public class HotRankingService {
                 .departureDate(departureDate)
                 .arrivalDate(arrivalDate)
                 .adults(adults)
+                .minPrice(minPrice)
                 .build();
     }
 }

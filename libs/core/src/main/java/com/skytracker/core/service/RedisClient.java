@@ -61,4 +61,12 @@ public class RedisClient {
         redisTemplate.opsForList().rightPush(key, json);
         redisTemplate.expire(key, Duration.ofMinutes(9));
     }
+
+    public Integer getminPrice(String key) {
+        String value = (String) redisTemplate.opsForValue().get(key);
+        if (value == null) {
+            return null;
+        }
+        return Integer.parseInt(value);
+    }
 }

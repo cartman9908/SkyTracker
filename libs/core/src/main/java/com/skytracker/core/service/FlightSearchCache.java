@@ -1,7 +1,5 @@
 package com.skytracker.core.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.skytracker.common.dto.flightSearch.FlightSearchResponseDto;
 import lombok.RequiredArgsConstructor;
@@ -9,7 +7,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,14 +46,4 @@ public class FlightSearchCache {
             return null;
         }
     }
-
-    public void putSearch(String uniqueKey,List<FlightSearchResponseDto> dto){
-        try {
-            String json = objectMapper.writeValueAsString(dto);
-            redisTemplate.opsForValue().set(uniqueKey, json, Duration.ofMinutes(5));
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
 }
