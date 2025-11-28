@@ -48,6 +48,9 @@ public class HotRankingService {
             throw new IllegalArgumentException("Invalid key format: " + key);
         }
 
+        String minPriceKey = key + ":minPrice";
+        Integer minPrice = redisClient.getminPrice(minPriceKey);
+
         String departureAirport = parts[0];
         String arrivalAirport = parts[1];
         String departureDate = parts[2];
