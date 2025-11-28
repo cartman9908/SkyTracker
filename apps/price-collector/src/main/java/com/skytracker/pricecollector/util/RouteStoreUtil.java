@@ -11,7 +11,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Service
@@ -29,6 +31,8 @@ public class RouteStoreUtil {
             return;
         }
 
+        Map<String, Integer> minPriceMap = new HashMap<>();
+
         for (FlightSearchResponseDto responseDto : dtoList) {
 
             String key = getRouteKey(SortedRouteDto.from(responseDto)); // 변환 필요 시
@@ -40,18 +44,22 @@ public class RouteStoreUtil {
             int price = responseDto.getTotalPrice();
             String json = objectMapper.writeValueAsString(responseDto);
 
-            String minPriceKey = key + ":minPrice";
-            Integer currentMin = redisClient.getminPrice(minPriceKey);
-
-            // 최저가 비교 후 갱신
-            if (currentMin == null || price < currentMin) {
-                redisClient.setValueWithTTL(minPriceKey, String.valueOf(price), Duration.ofMinutes(10));
-                log.info("HOT ROUTE 최저가 갱신: {} -> {}", key, price);
-            }
-
             redisClient.kafkaPushList(key, json);
             log.info("HOT ROUTE 저장 성공: {}", key);
+
+            Integer minPrice = minPriceMap.get(key);
+            if (minPrice == null || price < minPrice) {
+                minPriceMap.put(key, price);
+            }
         }
+
+        minPriceMap.forEach((key, value) -> {
+            String minPriceKey = key + ":minPrice";
+            Integer currentMinPrice = redisClient.getminPrice(minPriceKey);
+            if (currentMinPrice == null || value < currentMinPrice) {
+                redisClient.setValueWithTTL(minPriceKey, String.valueOf(value), Duration.ofMinutes(9));
+            }
+        });
     }
 
     private String getRouteKey(SortedRouteDto dto) {
