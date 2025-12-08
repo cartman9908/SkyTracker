@@ -36,6 +36,7 @@ ERD
 
 <img width="1928" height="1312" alt="image" src="https://github.com/user-attachments/assets/5930de0b-509a-4441-a242-eb1317f20902" />
 
+⸻
 
 ✨ 핵심 기능
 	•	항공권 조건 검색 (출발/도착지, 날짜, 좌석 등)
@@ -45,4 +46,3 @@ ERD
 	•	GPT 기반 항공권 추천 챗봇
 	•	Oauth2 기반 소셜 로그인 + 이메일 알림 발송  ￼
 
-⸻
