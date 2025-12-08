@@ -21,7 +21,9 @@ SkyTracker는 사용자가 직접 여러 번 검색하지 않아도
 등을 설계하여 항공권 검색 효율성과 사용자 경험을 높였습니다.  ￼
 
 ⸻
+
 아키텍처 
+
 <img width="1482" height="932" alt="image" src="https://github.com/user-attachments/assets/d28d0de9-651a-4c6a-8e40-04c9ea1ee08c" />
 
 아키텍처 구성은 다음과 같습니다. (Spring Boot 3개 서비스 + Kafka + Redis + MySQL + ElasticSearch)
@@ -29,7 +31,9 @@ Kubernetes 기반 클러스터에서 구성, NGINX Ingress 적용
 데이터 수집 → Kafka → 저장 → API 서버에서 제공
 
 ⸻
+
 ERD
+
 <img width="1928" height="1312" alt="image" src="https://github.com/user-attachments/assets/5930de0b-509a-4441-a242-eb1317f20902" />
 
 
@@ -40,9 +44,5 @@ ERD
 	•	검색한 항공권 가격 알림 등록/해제
 	•	GPT 기반 항공권 추천 챗봇
 	•	Oauth2 기반 소셜 로그인 + 이메일 알림 발송  ￼
-
-⸻
-
-
 
 ⸻
