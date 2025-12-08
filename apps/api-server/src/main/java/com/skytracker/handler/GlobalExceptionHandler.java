@@ -1,4 +1,4 @@
-package com.skytracker.controller;
+package com.skytracker.handler;
 
 import com.skytracker.common.exception.BusinessException;
 import com.skytracker.common.exception.ErrorCode;
